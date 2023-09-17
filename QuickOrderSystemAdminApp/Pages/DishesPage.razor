@@ -1,0 +1,71 @@
+﻿@using QuickOrderSystemAdminApp.Data;
+@using QuickOrderSystemAdminApp.Pages.PopUp;
+@inject PopUpService PopupService
+
+@page "/Dishes"
+
+<table class="table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (product == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                @foreach (var item in product)
+                {
+                    <tr>
+                        <td>@item.ID</td>
+                        <td>@item.name</td>
+                        <td>@item.description</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button @onclick="ShowCustomPopup" class="add-button">
+        Hinzufügen
+    </button>
+</table>
+
+@code {
+    private List<Product> product;
+    private ProductService productService;
+
+    private void ShowCustomPopup()
+    {
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CreateProduct));
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        productService = new ProductService("https://localhost:7278/api");
+        product = await productService.GetAllAsync();
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
+
+<style>
+    .add-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+        border-radius: 12px;
+    }
+</style>

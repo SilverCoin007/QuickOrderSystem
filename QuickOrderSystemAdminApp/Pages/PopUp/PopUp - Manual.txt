@@ -1,0 +1,34 @@
+Call PopUp
+	write 
+		@using QuickOrderSystemAdminApp.Data;
+		@inject PopUpService PopupService
+
+		<button @onclick="ShowCustomPopup" class="add-button">
+			Add
+		</button>
+
+	Code
+		private void ShowCustomPopup()
+		{
+			RenderFragment content = builder =>
+			{
+				builder.OpenComponent(0, typeof(CreateProduct)); // => call Custom Page, choose your page you want to show as a popup
+				builder.CloseComponent();
+			};
+
+			PopupService.Show(content);
+		}
+
+Close Popup from Custom Page
+	write
+		@using QuickOrderSystemAdminApp.Data;
+		@inject PopUpService PopupService
+
+		<button @onclick="CloseThePopup">Schlieﬂe das Popup</button>
+
+	Code
+		private void CloseThePopup()
+		{
+			PopupService.Close();
+		}
+	

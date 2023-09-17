@@ -1,0 +1,60 @@
+﻿@page "/QR-Code"
+@using QuickOrderSystemAdminApp.Data;
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Qr Code ID</th>
+            <th>Table Number</th>
+            <th>Created</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (qrCode == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var item in qrCode)
+            {
+                <tr>
+                    <td>@item.ID</td>
+                    <td>@item.TableNumber</td>
+                    <td>@item.Created</td>
+                    <td>@item.ImageData</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<button @onclick="AddProduct" class="add-button">
+    Hinzufügen
+</button>
+
+
+@code {
+    private List<QrCode> qrCode;
+    private QrCodeService qrCodeService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        qrCodeService = new QrCodeService("https://localhost:7278/api");
+        qrCode = await qrCodeService.GetAllAsync();
+    }
+
+    private void AddProduct()
+    {
+        // Deine Logik zum Hinzufügen eines Produkts
+    }
+}
+
+<style>
+    .add-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+        border-radius: 12px;
+    }
+</style>

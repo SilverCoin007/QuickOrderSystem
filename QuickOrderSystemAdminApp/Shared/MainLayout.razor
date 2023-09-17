@@ -1,0 +1,58 @@
+﻿@using QuickOrderSystemAdminApp.Data;
+@inherits LayoutComponentBase
+@inject PopUpService PopupService
+<div class="page">
+	
+		<div>
+			<NavMenu />
+		</div>
+
+		<main>
+			<div class="top-row px-4">
+				<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+			</div>
+
+			<article class="content px-4">
+				<PopUp IsOpen="@isPopUpOpen" PopupContent="popupContent"></PopUp>
+				@Body
+			</article>
+		</main>
+
+		<div class="fixed-bottom-div">
+			<NavBar />
+		</div>
+</div>
+
+@code {
+	private bool isPopUpOpen = false;
+	private RenderFragment popupContent;
+
+	protected override void OnInitialized()
+	{
+		PopupService.OnShow += ShowPopup;
+		PopupService.OnClose += ClosePopup;
+	}
+
+	private void ShowPopup(RenderFragment content)
+	{
+		popupContent = content;
+		isPopUpOpen = true;
+		StateHasChanged();
+	}
+
+	private void ClosePopup()
+	{
+		isPopUpOpen = false;
+		StateHasChanged();
+	}
+}
+
+<style>
+	.fixed-bottom-div {
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		z-index: 1030;
+		padding: 15px;
+	}
+</style>

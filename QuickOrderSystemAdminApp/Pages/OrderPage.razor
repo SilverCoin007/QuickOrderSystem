@@ -1,0 +1,61 @@
+﻿@page "/Order"
+@using QuickOrderSystemAdminApp.Data;
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Table Number</th>
+            <th>Created</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (order == null)
+{
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var item in order)
+            {
+                <tr>
+                    <td>@item.OrderID</td>
+                    <td>@item.TableNumber</td>
+                    <td>@item.Created</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<button @onclick="AddProduct" class="add-button">
+    Hinzufügen
+</button>
+
+
+@code {
+    private List<Order> order;
+    private OrderService orderService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orderService = new OrderService("https://localhost:7278/api");
+        order = await orderService.GetAllAsync();
+    }
+
+    private void AddProduct()
+    {
+        // Deine Logik zum Hinzufügen eines Produkts
+    }
+}
+
+<style>
+    .add-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+        border-radius: 12px;
+    }
+</style>

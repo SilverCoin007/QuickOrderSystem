@@ -9,9 +9,9 @@ namespace QuickOrderSystemWebAPI.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ProductContext _dbContext;
+        private readonly DatabaseContext _dbContext;
 
-        public ProductController(ProductContext dbContext)
+        public ProductController(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
         }

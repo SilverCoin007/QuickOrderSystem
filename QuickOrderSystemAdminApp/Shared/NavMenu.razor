@@ -1,0 +1,84 @@
+﻿<div class="NavMenu">
+    <div class="TopBar">
+        <button @onclick="NavigateToAccount">
+            <img src="Images/Icons/Account.png" />
+        </button>
+
+        <h2 alt="Website Icon">@currentRoute</h2>
+
+        <button @onclick="NavigateToSettings">
+            <img src="Images/Icons/Settings.png" />
+        </button>
+    </div>
+    <Searchbar currentRoute="@currentRoute" />
+    </div>
+
+@code {
+    private string currentRoute;
+
+    protected override void OnInitialized()
+    {
+        UpdateCurrentRoute();
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdateCurrentRoute();
+        StateHasChanged();
+    }
+
+    private void UpdateCurrentRoute()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        currentRoute = uri.LocalPath.StartsWith("/") ? uri.LocalPath.Substring(1) : uri.LocalPath;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+
+    private void NavigateToAccount()
+    {
+        NavigationManager.NavigateTo("/Account");
+    }
+
+    private void NavigateToSettings()
+    {
+        NavigationManager.NavigateTo("/Dashboard");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
+
+<style>
+    .NavMenu {
+        background-color: #F59D07;
+        padding: 15px;
+    }
+
+    .TopBar {
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .TopBar button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+            .TopBar img {
+                width: 27px;
+                height: 27px;
+            }
+
+            .TopBar h2 {
+                color: white;
+            }
+</style>
+

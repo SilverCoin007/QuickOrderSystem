@@ -1,0 +1,20 @@
+﻿@using QuickOrderSystemAdminApp.Data;
+@inject PopUpService PopupService
+
+@page "/CreateProduct"
+
+<h3>Create Product</h3>
+<button @onclick="CloseThePopup">Schließe das Popup</button>
+
+
+
+@code {
+    private void CloseThePopup()
+    {
+        PopupService.Close();
+    }
+}
+
+<style>
+    
+</style>
