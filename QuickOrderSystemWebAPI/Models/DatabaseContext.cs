@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QuickOrderSystemWebAPI.Models;
+using QuickOrderSystemClassLibrary;
 
 namespace QuickOrderSystemWebAPI.Models
 {

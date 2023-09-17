@@ -1,6 +1,8 @@
-﻿@page "/QR-Code"
-@using QuickOrderSystemAdminApp.Data;
+﻿@using QuickOrderSystemAdminApp.Data;
+@using QuickOrderSystemAdminApp.Pages.PopUp;
+@inject PopUpService PopupService
 
+@page "/QR-Code"
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +31,7 @@
         }
     </tbody>
 </table>
-<button @onclick="AddProduct" class="add-button">
+<button @onclick="AddQrCode" class="add-button">
     Hinzufügen
 </button>
 
@@ -44,9 +46,17 @@
         qrCode = await qrCodeService.GetAllAsync();
     }
 
-    private void AddProduct()
+    private void AddQrCode()
     {
-        // Deine Logik zum Hinzufügen eines Produkts
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CreateQrCode));
+            builder.AddAttribute(1, "Items", new List<string> { "Item1", "Item2" });
+            builder.AddAttribute(2, "Create", true);
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
     }
 }
 
