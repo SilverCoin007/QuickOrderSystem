@@ -1,5 +1,7 @@
 ﻿@using QuickOrderSystemAdminApp.Data;
 @using QuickOrderSystemAdminApp.Pages.PopUp;
+@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum;
 @inject PopUpService PopupService
 
 @page "/Dishes"
@@ -45,6 +47,8 @@
         RenderFragment content = builder =>
         {
             builder.OpenComponent(0, typeof(CreateProduct));
+            //builder.AddAttribute(1, "CrudType", CrudTyp.Create);
+            //builder.AddAttribute(2, "ProductModel", new Product { ID = 1, name = "Example", description = "Example description" });
             builder.CloseComponent();
         };
 

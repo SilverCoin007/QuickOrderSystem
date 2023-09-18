@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using QuickOrderSystemWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using QuickOrderSystemClassLibrary;
 
 namespace QuickOrderSystemWebAPI.Controllers
 {
