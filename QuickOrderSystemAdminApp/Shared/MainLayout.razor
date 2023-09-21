@@ -8,10 +8,6 @@
 		</div>
 
 		<main>
-			<div class="top-row px-4">
-				<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-			</div>
-
 			<article class="content px-4">
 				<PopUp IsOpen="@isPopUpOpen" PopupContent="popupContent"></PopUp>
 				@Body
@@ -54,5 +50,15 @@
 		width: 100%;
 		z-index: 1030;
 		padding: 15px;
+	}
+
+	.popup-close-button {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+		z-index: 10;
 	}
 </style>

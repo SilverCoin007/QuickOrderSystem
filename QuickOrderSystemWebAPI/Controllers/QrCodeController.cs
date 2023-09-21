@@ -51,7 +51,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             return CreatedAtAction(nameof(GetQrCodes), new { id = qrCode.ID }, qrCode);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> PutQrCode(int id, QrCode qrCode)
         {
             if (id != qrCode.ID)
@@ -83,7 +83,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             return (_dbContext.QrCodes?.Any(x => x.ID == id)).GetValueOrDefault();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQrCode(int id)
         {
             if (_dbContext.QrCodes == null)

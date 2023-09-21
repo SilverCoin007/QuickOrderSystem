@@ -8,7 +8,7 @@ using QuickOrderSystemClassLibrary;
 
 namespace QuickOrderSystemAdminApp.Data
 {
-    internal class ProductService
+    public class ProductService
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;
@@ -32,7 +32,7 @@ namespace QuickOrderSystemAdminApp.Data
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/products/{id}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/product/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -44,18 +44,18 @@ namespace QuickOrderSystemAdminApp.Data
         public async Task CreateAsync(Product product)
         {
             var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync($"{_baseUrl}/products", content);
+            await _httpClient.PostAsync($"{_baseUrl}/product", content);
         }
 
         public async Task UpdateAsync(int id, Product product)
         {
             var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
-            await _httpClient.PutAsync($"{_baseUrl}/products/{id}", content);
+            await _httpClient.PutAsync($"{_baseUrl}/product/{id}", content);
         }
 
         public async Task DeleteAsync(int id)
         {
-            await _httpClient.DeleteAsync($"{_baseUrl}/products/{id}");
+            await _httpClient.DeleteAsync($"{_baseUrl}/product/{id}");
         }
     }
 }

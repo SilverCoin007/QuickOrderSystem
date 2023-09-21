@@ -1,55 +1,89 @@
-﻿@page "/Order"
-@using QuickOrderSystemAdminApp.Data;
+﻿@using QuickOrderSystemAdminApp.Data;
+@using QuickOrderSystemAdminApp.Pages.PopUp;
 @using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum;
+@inject PopUpService PopupService
 
-
+@page "/Order"
 <table class="table">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Table Number</th>
-            <th>Created</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (order == null)
-{
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            @foreach (var item in order)
+    <table class="table">
+        <thead>
+            <tr>
+                <th>TableNumber</th>
+                <th>Created</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (order == null)
             {
-                <tr>
-                    <td>@item.OrderID</td>
-                    <td>@item.TableNumber</td>
-                    <td>@item.Created</td>
-                    <td>@item.Status</td>
-                </tr>
+                <p><em>Loading...</em></p>
             }
-        }
-    </tbody>
+            else
+            {
+                @foreach (var item in order)
+                {
+                    <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
+                        <td>@item.TableNumber</td>
+                        <td>@item.Created</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
+        Add
+    </button>
 </table>
-<button @onclick="AddProduct" class="add-button">
-    Hinzufügen
-</button>
-
 
 @code {
     private List<Order> order;
     private OrderService orderService;
 
-    protected override async Task OnInitializedAsync()
+    private void ShowCustomPopup(CrudTyp? crudType = null, Order orderModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        orderModel ??= new Order();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudOrder));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "OrderModel", orderModel);
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
+    }
+
+    protected override async Task OnParametersSetAsync()
     {
         orderService = new OrderService("https://localhost:7278/api");
         order = await orderService.GetAllAsync();
     }
 
-    private void AddProduct()
+    protected override void OnInitialized()
     {
-        // Deine Logik zum Hinzufügen eines Produkts
+        NavigationManager.LocationChanged += HandleLocationChanged;
     }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (NavigationManager.Uri.EndsWith("/Order"))
+        {
+            orderService = new OrderService("https://localhost:7278/api");
+            order = await orderService.GetAllAsync();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
 }
 
 <style>

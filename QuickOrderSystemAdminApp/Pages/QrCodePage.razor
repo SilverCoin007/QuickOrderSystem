@@ -1,16 +1,15 @@
 ﻿@using QuickOrderSystemAdminApp.Data;
 @using QuickOrderSystemAdminApp.Pages.PopUp;
 @using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum;
 @inject PopUpService PopupService
 
 @page "/QR-Code"
 <table class="table">
     <thead>
         <tr>
-            <th>Qr Code ID</th>
-            <th>Table Number</th>
-            <th>Created</th>
-            <th>Image</th>
+            <th>QR-Code</th>
+            <th>Table Nr.</th>
         </tr>
     </thead>
     <tbody>
@@ -20,45 +19,75 @@
         }
         else
         {
-            @foreach (var item in qrCode)
+            foreach (var item in qrCode)
             {
-                <tr>
-                    <td>@item.ID</td>
+                <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImageData))
+                        {
+                            <img src="data:image/png;base64,@item.ImageData" width="100" height="100" />
+                        }
+                        else
+                        {
+                            <span>No image available</span>
+                        }
+                    </td>
                     <td>@item.TableNumber</td>
-                    <td>@item.Created</td>
-                    <td>@item.ImageData</td>
                 </tr>
             }
         }
     </tbody>
 </table>
-<button @onclick="AddQrCode" class="add-button">
-    Hinzufügen
+<button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
+    Add
 </button>
-
-
 @code {
     private List<QrCode> qrCode;
     private QrCodeService qrCodeService;
 
-    protected override async Task OnInitializedAsync()
+    private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
     {
-        qrCodeService = new QrCodeService("https://localhost:7278/api");
-        qrCode = await qrCodeService.GetAllAsync();
-    }
+        crudType ??= CrudTyp.Create;
+        qrCodeModel ??= new QrCode();
 
-    private void AddQrCode()
-    {
         RenderFragment content = builder =>
         {
-            builder.OpenComponent(0, typeof(CreateQrCode));
-            builder.AddAttribute(1, "Items", new List<string> { "Item1", "Item2" });
-            builder.AddAttribute(2, "Create", true);
+            builder.OpenComponent(0, typeof(CrudQrCode));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "QrCodeModel", qrCodeModel);
             builder.CloseComponent();
         };
 
         PopupService.Show(content);
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        qrCodeService = new QrCodeService("https://localhost:7278/api");
+        qrCode = await qrCodeService.GetAllAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (NavigationManager.Uri.EndsWith("/QR-Code"))
+        {
+            qrCodeService = new QrCodeService("https://localhost:7278/api");
+            qrCode = await qrCodeService.GetAllAsync();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
 }
 
 <style>

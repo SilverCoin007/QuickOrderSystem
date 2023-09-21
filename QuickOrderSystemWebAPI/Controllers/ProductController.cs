@@ -51,7 +51,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             return CreatedAtAction(nameof(GetProducts), new {id = product.ID }, product);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> PutProduct(int id,Product product)
         {
             if(id != product.ID)
@@ -83,7 +83,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             return (_dbContext.Products?.Any(x => x.ID == id)).GetValueOrDefault();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if(_dbContext.Products == null)

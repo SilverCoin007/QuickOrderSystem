@@ -9,6 +9,7 @@ namespace QuickOrderSystemClassLibrary
 
         [DataType(DataType.Date)]
         public DateTime Created { get; set; }
-        public byte[] ImageData { get; set; }
+        public string? ImageData { get; set; }
+        public string? Url { get; set; }
     }
 }

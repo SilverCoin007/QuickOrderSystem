@@ -11,7 +11,13 @@
     [Parameter] public RenderFragment PopupContent { get; set; }
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    private void ClosePopup()
+    {
+        IsOpen = false;
+        IsOpenChanged.InvokeAsync(IsOpen);
     }
+}
 
 <style>
     .popup-overlay {

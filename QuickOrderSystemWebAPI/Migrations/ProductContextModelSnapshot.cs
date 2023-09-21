@@ -22,13 +22,13 @@ namespace QuickOrderSystemWebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("QuickOrderSystemWebAPI.Models.Order", b =>
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.Order", b =>
                 {
-                    b.Property<int>("OrderID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -39,12 +39,12 @@ namespace QuickOrderSystemWebAPI.Migrations
                     b.Property<int>("TableNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("OrderID");
+                    b.HasKey("ID");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("QuickOrderSystemWebAPI.Models.Product", b =>
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.Product", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace QuickOrderSystemWebAPI.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("QuickOrderSystemWebAPI.Models.QrCode", b =>
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.QrCode", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -74,8 +74,14 @@ namespace QuickOrderSystemWebAPI.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImageData")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TableNumber")
                         .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

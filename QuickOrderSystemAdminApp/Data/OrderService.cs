@@ -21,7 +21,7 @@ namespace QuickOrderSystemAdminApp.Data
 
         public async Task<List<Order>> GetAllAsync()
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/orders");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/order");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -32,7 +32,7 @@ namespace QuickOrderSystemAdminApp.Data
 
         public async Task<Order> GetByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/orders/{id}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/order/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -44,18 +44,18 @@ namespace QuickOrderSystemAdminApp.Data
         public async Task CreateAsync(Order order)
         {
             var content = new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync($"{_baseUrl}/orders", content);
+            await _httpClient.PostAsync($"{_baseUrl}/order", content);
         }
 
         public async Task UpdateAsync(int id, Order order)
         {
             var content = new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json");
-            await _httpClient.PutAsync($"{_baseUrl}/persons/{id}", content);
+            await _httpClient.PutAsync($"{_baseUrl}/order/{id}", content);
         }
 
         public async Task DeleteAsync(int id)
         {
-            await _httpClient.DeleteAsync($"{_baseUrl}/orders/{id}");
+            await _httpClient.DeleteAsync($"{_baseUrl}/order/{id}");
         }
     }
 }

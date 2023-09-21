@@ -25,6 +25,7 @@ namespace QuickOrderSystemAdminApp
 			builder.Services.AddSingleton<OrderService>();
             builder.Services.AddSingleton<ProductService>();
             builder.Services.AddSingleton<QrCodeService>();
+            builder.Services.AddSingleton<GenerateQRCode>();
 
             return builder.Build();
         }
