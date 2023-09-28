@@ -11,6 +11,7 @@
             <tr>
                 <th>Name</th>
                 <th>Description</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -23,8 +24,9 @@
                 @foreach (var item in product)
                 {
                     <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
-                        <td>@item.name</td>
-                        <td>@item.description</td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Price</td>
                     </tr>
                 }
             }

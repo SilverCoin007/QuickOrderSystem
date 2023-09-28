@@ -16,7 +16,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="ProductModel.ID"
+            @bind="ProductModel.Id"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
         <div class="form-group custom-input">
@@ -24,7 +24,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="ProductModel.name"
+            @bind="ProductModel.Name"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
         <div class="form-group custom-input">
@@ -32,7 +32,15 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="ProductModel.description"
+                   @bind="ProductModel.Description"
+                   readonly="@(CrudType == CrudTyp.Read)">
+        </div>
+        <div class="form-group custom-input">
+            <label for="Prize">Prize</label>
+            <input type="text"
+                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
+                   id="ID"
+                   @bind="ProductModel.Price"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
     }
@@ -80,7 +88,7 @@
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        ProductModel = await productService.GetByIdAsync(ProductModel.ID);
+        ProductModel = await productService.GetByIdAsync(ProductModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -88,7 +96,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        ProductModel = await productService.GetByIdAsync(ProductModel.ID);
+        ProductModel = await productService.GetByIdAsync(ProductModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -101,7 +109,7 @@
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await productService.UpdateAsync(ProductModel.ID, ProductModel);
+            await productService.UpdateAsync(ProductModel.Id, ProductModel);
         }
 
         ClosePopup();
@@ -111,7 +119,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await productService.DeleteAsync(ProductModel.ID);
+            await productService.DeleteAsync(ProductModel.Id);
         }
 
         ClosePopup();

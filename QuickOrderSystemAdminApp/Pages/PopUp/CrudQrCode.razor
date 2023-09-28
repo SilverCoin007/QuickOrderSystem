@@ -16,7 +16,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="QrCodeModel.ID"
+            @bind="QrCodeModel.Id"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
         <div class="form-group custom-input">
@@ -97,7 +97,7 @@
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.ID);
+        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -105,7 +105,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.ID);
+        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -123,7 +123,7 @@
             }
             else if (CrudType == CrudTyp.Update)
             {
-                await qrCodeService.UpdateAsync(QrCodeModel.ID, QrCodeModel);
+                await qrCodeService.UpdateAsync(QrCodeModel.Id, QrCodeModel);
             }
         }
 
@@ -134,7 +134,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await qrCodeService.DeleteAsync(QrCodeModel.ID);
+            await qrCodeService.DeleteAsync(QrCodeModel.Id);
         }
 
         ClosePopup();

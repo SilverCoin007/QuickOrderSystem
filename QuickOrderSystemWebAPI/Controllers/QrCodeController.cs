@@ -48,13 +48,13 @@ namespace QuickOrderSystemWebAPI.Controllers
             _dbContext.QrCodes.Add(qrCode);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetQrCodes), new { id = qrCode.ID }, qrCode);
+            return CreatedAtAction(nameof(GetQrCodes), new { id = qrCode.Id }, qrCode);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> PutQrCode(int id, QrCode qrCode)
         {
-            if (id != qrCode.ID)
+            if (id != qrCode.Id)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace QuickOrderSystemWebAPI.Controllers
 
         private bool BrandAvailable(int id)
         {
-            return (_dbContext.QrCodes?.Any(x => x.ID == id)).GetValueOrDefault();
+            return (_dbContext.QrCodes?.Any(x => x.Id == id)).GetValueOrDefault();
         }
 
         [HttpDelete("{id}")]

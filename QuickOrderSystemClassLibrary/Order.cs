@@ -4,7 +4,7 @@ namespace QuickOrderSystemClassLibrary
 {
     public class Order
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int TableNumber { get; set; }
 
         [DataType(DataType.Date)]

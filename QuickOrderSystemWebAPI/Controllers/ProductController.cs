@@ -48,13 +48,13 @@ namespace QuickOrderSystemWebAPI.Controllers
             _dbContext.Products.Add(product);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProducts), new {id = product.ID }, product);
+            return CreatedAtAction(nameof(GetProducts), new {id = product.Id }, product);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> PutProduct(int id,Product product)
         {
-            if(id != product.ID)
+            if(id != product.Id)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace QuickOrderSystemWebAPI.Controllers
 
         private bool BrandAvailable(int id)
         {
-            return (_dbContext.Products?.Any(x => x.ID == id)).GetValueOrDefault();
+            return (_dbContext.Products?.Any(x => x.Id == id)).GetValueOrDefault();
         }
 
         [HttpDelete("{id}")]

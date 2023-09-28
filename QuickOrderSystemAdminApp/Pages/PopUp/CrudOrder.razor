@@ -16,7 +16,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="OrderModel.ID"
+            @bind="OrderModel.Id"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
         <div class="form-group custom-input">
@@ -88,7 +88,7 @@
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsync(OrderModel.ID);
+        OrderModel = await orderService.GetByIdAsync(OrderModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -96,7 +96,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsync(OrderModel.ID);
+        OrderModel = await orderService.GetByIdAsync(OrderModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -109,7 +109,7 @@
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await orderService.UpdateAsync(OrderModel.ID, OrderModel);
+            await orderService.UpdateAsync(OrderModel.Id, OrderModel);
         }
 
         ClosePopup();
@@ -119,7 +119,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await orderService.DeleteAsync(OrderModel.ID);
+            await orderService.DeleteAsync(OrderModel.Id);
         }
 
         ClosePopup();
