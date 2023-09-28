@@ -2,9 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystem", "QuickOrderSystem\QuickOrderSystem.csproj", "{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemWebAPI", "QuickOrderSystemWebAPI\QuickOrderSystemWebAPI.csproj", "{68BC3194-E152-4322-A27A-6FA93AC38039}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickOrderSystemWebAPI", "QuickOrderSystemWebAPI\QuickOrderSystemWebAPI.csproj", "{68BC3194-E152-4322-A27A-6FA93AC38039}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemAdminApp", "QuickOrderSystemAdminApp\QuickOrderSystemAdminApp.csproj", "{BCC38722-455B-4E20-A16E-C6113DB3647C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemClassLibrary", "QuickOrderSystemClassLibrary\QuickOrderSystemClassLibrary.csproj", "{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickOrderSystemCustomerApp", "QuickOrderSystemCustomerApp\QuickOrderSystemCustomerApp.csproj", "{3BD69753-7C76-4AD1-BBA2-6510B25806B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,16 +16,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE8AC6B0-B6D0-4915-9D6E-E9318C8E841A}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{68BC3194-E152-4322-A27A-6FA93AC38039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{68BC3194-E152-4322-A27A-6FA93AC38039}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68BC3194-E152-4322-A27A-6FA93AC38039}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68BC3194-E152-4322-A27A-6FA93AC38039}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCC38722-455B-4E20-A16E-C6113DB3647C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BD69753-7C76-4AD1-BBA2-6510B25806B6}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

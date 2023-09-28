@@ -1,0 +1,96 @@
+﻿<div class="navbar">
+    <button @onclick="NavigateToWebsite">
+        <img src="Images/Icons/Website.png" class="image @GetImageClass("Website")" />
+        <div class="ExpressionMark @GetExpressionMarkClass("Website")"></div>
+    </button>
+    <button @onclick="NavigateToDashboard">
+        <img src="Images/Icons/Dashboard.png" class="image @GetImageClass("Dashboard")" />
+        <div class="ExpressionMark @GetExpressionMarkClass("Dashboard")"></div>
+    </button>
+    <button @onclick="NavigateToOrder">
+        <img src="Images/Icons/Order.png" class="image @GetImageClass("Order")" />
+        <div class="ExpressionMark @GetExpressionMarkClass("Order")"></div>
+    </button>
+    <button @onclick="NavigateToQrCode">
+        <img src="Images/Icons/QrCode.png" class="image @GetImageClass("QR-Code")" />
+        <div class="ExpressionMark @GetExpressionMarkClass("QR-Code")"></div>
+    </button>
+    <button @onclick="NavigateToDishes">
+        <img src="Images/Icons/Dishes.png" class="image @GetImageClass("Dishes")" />
+        <div class="ExpressionMark @GetExpressionMarkClass("Dishes")"></div>
+    </button>
+</div>
+
+@code {
+    string activeButton;
+
+    private void NavigateToWebsite() => NavigateTo("Website");
+    private void NavigateToDashboard() => NavigateTo("Dashboard");
+    private void NavigateToOrder() => NavigateTo("Order");
+    private void NavigateToQrCode() => NavigateTo("QR-Code");
+    private void NavigateToDishes() => NavigateTo("Dishes");
+    private void NavigateTo(string route)
+    {
+        NavigationManager.NavigateTo($"/{route}");
+        activeButton = route;
+    }
+
+    private string GetExpressionMarkClass(string buttonId)
+    {
+        return activeButton == buttonId ? "ExpressionMark active" : "ExpressionMark";
+    }
+
+    private string GetImageClass(string buttonId)
+    {
+        return activeButton == buttonId ? "image shrink" : "image";
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
+
+<style>
+    .navbar {
+        background-color: #F59D07;
+        border-radius: 50000px;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+    }
+
+        .navbar button {
+            background-color: transparent;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+    .image {
+        width: 28px;
+        height: 28px;
+        transition: width 0.1s ease-out, height 0.1s ease-out;
+    }
+
+        .image.shrink {
+            width: 24px;
+            height: 24px;
+        }
+
+    .ExpressionMark {
+        background-color: white;
+        height: 0px;
+        width: 9px;
+        border-radius: 5000px;
+        margin-top: 6px;
+        display: inline-block;
+        transition: width 0.1s ease-out, height 0.1s ease-out;
+    }
+
+        .ExpressionMark.active {
+            height: 4px;
+            width: 19px;
+        }
+</style>

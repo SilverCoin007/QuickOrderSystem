@@ -1,0 +1,100 @@
+﻿@using QuickOrderSystemAdminApp.Data;
+@using QuickOrderSystemAdminApp.Pages.PopUp;
+@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum;
+@inject PopUpService PopupService
+
+@page "/QR-Code"
+<table class="table">
+    <thead>
+        <tr>
+            <th>QR-Code</th>
+            <th>Table Nr.</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (qrCode == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            foreach (var item in qrCode)
+            {
+                <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImageData))
+                        {
+                            <img src="data:image/png;base64,@item.ImageData" width="100" height="100" />
+                        }
+                        else
+                        {
+                            <span>No image available</span>
+                        }
+                    </td>
+                    <td>@item.TableNumber</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
+    Add
+</button>
+@code {
+    private List<QrCode> qrCode;
+    private QrCodeService qrCodeService;
+
+    private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        qrCodeModel ??= new QrCode();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudQrCode));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "QrCodeModel", qrCodeModel);
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        qrCodeService = new QrCodeService("https://localhost:7278/api");
+        qrCode = await qrCodeService.GetAllAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (NavigationManager.Uri.EndsWith("/QR-Code"))
+        {
+            qrCodeService = new QrCodeService("https://localhost:7278/api");
+            qrCode = await qrCodeService.GetAllAsync();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
+
+<style>
+    .add-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+        border-radius: 12px;
+    }
+</style>

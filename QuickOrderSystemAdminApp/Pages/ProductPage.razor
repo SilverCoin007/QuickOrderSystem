@@ -1,0 +1,96 @@
+﻿@using QuickOrderSystemAdminApp.Data;
+@using QuickOrderSystemAdminApp.Pages.PopUp;
+@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum;
+@inject PopUpService PopupService
+
+@page "/Dishes"
+<table class="table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (product == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                @foreach (var item in product)
+                {
+                    <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Price</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
+        Add
+    </button>
+</table>
+
+@code {
+    private List<Product> product;
+    private ProductService productService;
+
+    private void ShowCustomPopup(CrudTyp? crudType = null, Product productModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        productModel ??= new Product();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudProduct));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "ProductModel", productModel);
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        productService = new ProductService("https://localhost:7278/api");
+        product = await productService.GetAllAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (NavigationManager.Uri.EndsWith("/Dishes"))
+        {
+            productService = new ProductService("https://localhost:7278/api");
+            product = await productService.GetAllAsync();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
+
+<style>
+    .add-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+        border-radius: 12px;
+    }
+</style>

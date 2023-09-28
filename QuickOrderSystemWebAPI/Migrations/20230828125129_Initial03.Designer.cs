@@ -10,7 +10,7 @@ using QuickOrderSystemWebAPI.Models;
 
 namespace QuickOrderSystemWebAPI.Migrations
 {
-    [DbContext(typeof(ProductContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20230828125129_Initial03")]
     partial class Initial03
     {
