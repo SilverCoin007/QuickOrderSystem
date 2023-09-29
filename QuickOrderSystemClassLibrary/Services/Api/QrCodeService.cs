@@ -8,7 +8,7 @@ using QuickOrderSystemClassLibrary;
 
 namespace QuickOrderSystemAdminApp.Data
 {
-    internal class QrCodeService
+    public class QrCodeService
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;

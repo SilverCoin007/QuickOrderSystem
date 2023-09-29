@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using QuickOrderSystemClassLibrary;
 
-namespace QuickOrderSystemAdminApp.Data
+namespace QuickOrderSystemClassLibrary.Services.Api
 {
-    internal class OrderService
+    public class OrderService
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QuickOrderSystemWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using QuickOrderSystemClassLibrary;
@@ -20,20 +19,12 @@ namespace QuickOrderSystemWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            if (_dbContext.Orders == null)
-            {
-                return NotFound();
-            }
             return await _dbContext.Orders.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrders(int id)
         {
-            if (_dbContext.Orders == null)
-            {
-                return NotFound();
-            }
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null)
             {
@@ -86,11 +77,6 @@ namespace QuickOrderSystemWebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            if (_dbContext.Orders == null)
-            {
-                return NotFound();
-            }
-
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null)
             {

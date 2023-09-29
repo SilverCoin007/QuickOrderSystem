@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemAdminApp", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemClassLibrary", "QuickOrderSystemClassLibrary\QuickOrderSystemClassLibrary.csproj", "{3E93EEA9-E6C3-43D0-AA41-46580CB5F5C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickOrderSystemCustomerApp", "QuickOrderSystemCustomerApp\QuickOrderSystemCustomerApp.csproj", "{3BD69753-7C76-4AD1-BBA2-6510B25806B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickOrderSystemCustomerApp", "QuickOrderSystemCustomerApp\QuickOrderSystemCustomerApp.csproj", "{3BD69753-7C76-4AD1-BBA2-6510B25806B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

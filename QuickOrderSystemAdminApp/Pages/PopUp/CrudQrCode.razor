@@ -1,6 +1,7 @@
 ﻿@using QuickOrderSystemAdminApp.Data;
 @using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Services.Api
 @inject PopUpService PopUpService
 
 <div class="container">
@@ -54,30 +55,31 @@
     }
 
     <div class="button-group">
-        @if (CrudType == CrudTyp.Create)
+        @switch (CrudType)
         {
-            <button class="btn btn-red" @onclick="ClosePopup">Cancel</button>
-            <button class="btn btn-green" @onclick="HandleSave">Create</button>
-        }
-        else if (CrudType == CrudTyp.Read)
-        {
-            <button class="btn btn-red" @onclick="ShowDeleteConfirmation">Delete</button>
-            <button class="btn btn-green" @onclick="SwitchToEditMode">Edit</button>
-        }
-        else if (CrudType == CrudTyp.Update)
-        {
-            <button class="btn btn-red" @onclick="ClosePopup">Cancel</button>
-            <button class="btn btn-green" @onclick="HandleSave">Edit</button>
-        }
-        else if (CrudType == CrudTyp.Delete)
-        {
-            <div class="delete-confirmation">
-                <p>Are you sure you want to delete this entry?</p>
-                <div>
-                    <button class="btn btn-green" @onclick="ClosePopup">No</button>
-                    <button class="btn btn-red" @onclick="HandleDelete">Yes</button>
+            case CrudTyp.Create:
+                <button class="btn btn-red" @onclick="@ClosePopup">Cancel</button>
+                <button class="btn btn-green" @onclick="@HandleSave">Create</button>
+                break;
+            case CrudTyp.Read:
+                <button class="btn btn-red" @onclick="@ShowDeleteConfirmation">Delete</button>
+                <button class="btn btn-green" @onclick="@SwitchToEditMode">Edit</button>
+                break;
+            case CrudTyp.Update:
+                <button class="btn btn-red" @onclick="@ClosePopup">Cancel</button>
+                <button class="btn btn-green" @onclick="@HandleSave">Edit</button>
+                break;
+            case CrudTyp.Delete:
+                <div class="delete-confirmation">
+                    <p>Are you sure you want to delete this entry?</p>
+                    <div>
+                        <button class="btn btn-green" @onclick="@ClosePopup">No</button>
+                        <button class="btn btn-red" @onclick="@HandleDelete">Yes</button>
+                    </div>
                 </div>
-            </div>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     </div>
 </div>

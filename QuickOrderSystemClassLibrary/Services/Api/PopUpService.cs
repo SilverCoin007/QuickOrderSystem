@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickOrderSystemAdminApp.Data
+namespace QuickOrderSystemClassLibrary.Services.Api
 {
     public class PopUpService
     {
