@@ -5,11 +5,6 @@
 @inject PopUpService PopUpService
 
 <div class="container">
-    <div class="popup-close" @onclick="ClosePopup">
-        <div class="popup-close-line1"></div>
-        <div class="popup-close-line2"></div>
-    </div>
-
     @if (CrudType != CrudTyp.Delete)
     {
         <div class="form-group custom-input">
@@ -198,33 +193,5 @@
 
     label {
         font-weight: bold; /* oder einen numerischen Wert wie 600 oder 700 */
-    }
-
-    .popup-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-    }
-
-    .popup-close-line1,
-    .popup-close-line2 {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 4px; /* Erhöhte Dicke */
-        background-color: #E0E0E0;
-        border-radius: 2px; /* Abgerundete Ecken */
-    }
-
-    .popup-close-line1 {
-        transform: translate(-50%, -50%) rotate(45deg);
-    }
-
-    .popup-close-line2 {
-        transform: translate(-50%, -50%) rotate(-45deg);
     }
 </style>

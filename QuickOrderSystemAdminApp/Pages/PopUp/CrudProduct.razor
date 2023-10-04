@@ -1,17 +1,41 @@
-﻿@using QuickOrderSystemAdminApp.Data;
-@using QuickOrderSystemClassLibrary.Enum;
-@using QuickOrderSystemClassLibrary;
+﻿@using QuickOrderSystemAdminApp.Data
+@using QuickOrderSystemClassLibrary.Enum
+@using QuickOrderSystemClassLibrary
 @using QuickOrderSystemClassLibrary.Services.Api
+@using System.IO
 @inject PopUpService PopUpService
 
 <div class="container">
-    <div class="popup-close" @onclick="ClosePopup">
-        <div class="popup-close-line1"></div>
-        <div class="popup-close-line2"></div>
-    </div>
-
     @if (CrudType != CrudTyp.Delete)
     {
+        <div class="form-group custom-input">
+            <label for="image">Image</label>
+
+            @if (CrudType == CrudTyp.Create || CrudType == CrudTyp.Update)
+            {
+                <div class="form-group custom-input">
+                    <div class="upload-button-wrapper">
+                        <button class="upload-button">Upload</button>
+                        <InputFile OnChange="OnChange" accept="image/png, image/jpeg, image/gif" />
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(imageSizeErrorMessage))
+            {
+                <div>@imageSizeErrorMessage</div>
+            }
+            else if (!string.IsNullOrEmpty(ProductModel.ImageData))
+            {
+                <div>
+                    <img class="Image-to-upload" src="data:image/png;base64,@ProductModel.ImageData" />
+                </div>
+            }
+            else
+            {
+                <div>No image available</div>
+            }
+        </div>
         <div class="form-group custom-input">
             <label for="ID">ID</label>
             <input type="text"
@@ -33,7 +57,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-                   @bind="ProductModel.Description"
+            @bind="ProductModel.Description"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
         <div class="form-group custom-input">
@@ -41,7 +65,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-                   @bind="ProductModel.Price"
+            @bind="ProductModel.Price"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
     }
@@ -59,7 +83,7 @@
                 break;
             case CrudTyp.Update:
                 <button class="btn btn-red" @onclick="@ClosePopup">Cancel</button>
-                <button class="btn btn-green" @onclick="@HandleSave">Edit</button>
+                <button class="btn btn-green" @onclick="@HandleSave">Apply</button>
                 break;
             case CrudTyp.Delete:
                 <div class="delete-confirmation">
@@ -81,26 +105,46 @@
     [Parameter] public Product ProductModel { get; set; }
 
     private ProductService productService;
+    private string imageSizeErrorMessage = null;
 
     protected override async Task OnInitializedAsync()
     {
         productService = new ProductService("https://localhost:7278/api");
     }
 
+    async Task OnChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        var maxSizeInMB = 5;
+        var maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+        if (file.Size > maxSizeInBytes)
+        {
+            imageSizeErrorMessage = $"Die Datei ist zu groß. Bitte laden Sie eine Datei hoch, die kleiner als {maxSizeInMB} MB ist.";
+            return;
+        }
+
+        using var memoryStream = new MemoryStream();
+        await file.OpenReadStream(maxSizeInBytes).CopyToAsync(memoryStream);
+        var base64Image = Convert.ToBase64String(memoryStream.ToArray());
+
+        ProductModel.ImageData = base64Image;
+        imageSizeErrorMessage = null;
+    }
+
     private async Task SwitchToEditMode()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         ProductModel = await productService.GetByIdAsync(ProductModel.Id);
         CrudType = CrudTyp.Update;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
     }
 
     private async Task ShowDeleteConfirmation()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         ProductModel = await productService.GetByIdAsync(ProductModel.Id);
         CrudType = CrudTyp.Delete;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
     }
 
     private async Task HandleSave()
@@ -138,27 +182,23 @@
 }
 
 <style>
+    .upload-button {
+        background-color: #F59D07 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
     .custom-input .form-control {
         border: none;
         border-bottom: 1px solid #ccc;
         border-radius: 0;
-        margin-bottom: 20px; /* Mehr Abstand zwischen den Eingabefeldern */
-    }
-
-    .button-group {
-        position: sticky;
-        bottom: 0;
-        text-align: center;
-        margin-top: 20px; /* Abstand zu den Textfeldern */
-        margin-bottom: 20px; /* Abstand zu den Buttons hinzugefügt */
-        display: flex;
-        justify-content: space-between; /* Buttons nebeneinander */
+        margin-bottom: 20px;
     }
 
     .btn {
         width: 48%;
-        height: 50px; /* Höher machen */
-        border-radius: 5px; /* Weniger abgerundet */
+        height: 50px;
+        border-radius: 5px;
     }
 
     .btn-green {
@@ -182,34 +222,53 @@
     }
 
     label {
-        font-weight: bold; /* oder einen numerischen Wert wie 600 oder 700 */
+        font-weight: bold;
     }
 
-    .popup-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 24px;
-        height: 24px;
+    .container {
+        position: relative;  /* Damit das Schließkreuz sich relativ zu diesem Container positioniert */
+    }
+
+    .button-group {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .upload-button-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+    }
+
+    .upload-button {
+        background-color: #F59D07;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: white;
+        text-align: center;
         cursor: pointer;
-    }
-
-    .popup-close-line1,
-    .popup-close-line2 {
-        position: absolute;
-        top: 50%;
-        left: 50%;
         width: 100%;
-        height: 4px; /* Erhöhte Dicke */
-        background-color: #E0E0E0;
-        border-radius: 2px; /* Abgerundete Ecken */
+        height: 100%;
     }
 
-    .popup-close-line1 {
-        transform: translate(-50%, -50%) rotate(45deg);
+    .Image-to-upload {
+        width: 100%;
+        max-width: 90%;
+        max-height: 200px;
+        margin-bottom: 20px;
+        object-fit: cover;
     }
 
-    .popup-close-line2 {
-        transform: translate(-50%, -50%) rotate(-45deg);
+    .upload-button-wrapper input[type=file] {
+        font-size: 100px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
     }
 </style>

@@ -63,7 +63,10 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.Modal" Version="7.1.0" />
+      <PackageReference Include="BlazorInputFile" Version="0.2.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="Quick.AspNetCore.Components.Web.Extensions" Version="6.0.2" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
       <PackageReference Include="ZXing.Net" Version="0.16.9" />
       <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" />
     </ItemGroup>

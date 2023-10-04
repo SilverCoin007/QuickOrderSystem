@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using QuickOrderSystemCustomerApp.Data;
 
 namespace QuickOrderSystemCustomerApp
 {
@@ -20,7 +19,7 @@ namespace QuickOrderSystemCustomerApp
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
-            builder.Services.AddSingleton<WeatherForecastService>();
+            //builder.Services.AddSingleton<WeatherForecastService>();
 
             return builder.Build();
         }

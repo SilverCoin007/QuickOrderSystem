@@ -50,8 +50,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\ProductDetailComponents\" />
-      <Folder Include="Pages\ShowOrderComponents\" />
+      <Folder Include="Data\" />
+      <Folder Include="Pages\ProductDetailPage\" />
+      <Folder Include="Pages\ShowOrderPage\" />
+      <Folder Include="wwwroot\Images\Icons\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\QuickOrderSystemClassLibrary\QuickOrderSystemClassLibrary.csproj" />
     </ItemGroup>
 
 </Project>

@@ -3,63 +3,79 @@
 @inherits LayoutComponentBase
 @inject PopUpService PopupService
 <div class="page">
-	
-		<div>
-			<NavMenu />
-		</div>
 
-		<main>
-			<article class="content px-4">
-				<PopUp IsOpen="@isPopUpOpen" PopupContent="popupContent"></PopUp>
-				@Body
-			</article>
-		</main>
+    <div class="fixed-NavMenu">
+        <NavMenu />
+    </div>
 
-		<div class="fixed-bottom-div">
-			<NavBar />
-		</div>
+    <main>
+        <article class="content">
+            <PopUp IsOpen="@isPopUpOpen" PopupContent="popupContent"></PopUp>
+            @Body
+        </article>
+    </main>
+
+    <div class="fixed-bottom-div">
+        <NavBar />
+    </div>
 </div>
 
 @code {
-	private bool isPopUpOpen = false;
-	private RenderFragment popupContent;
+    private bool isPopUpOpen = false;
+    private RenderFragment popupContent;
 
-	protected override void OnInitialized()
-	{
-		PopupService.OnShow += ShowPopup;
-		PopupService.OnClose += ClosePopup;
-	}
+    protected override void OnInitialized()
+    {
+        PopupService.OnShow += ShowPopup;
+        PopupService.OnClose += ClosePopup;
+    }
 
-	private void ShowPopup(RenderFragment content)
-	{
-		popupContent = content;
-		isPopUpOpen = true;
-		StateHasChanged();
-	}
+    private void ShowPopup(RenderFragment content)
+    {
+        popupContent = content;
+        isPopUpOpen = true;
+        StateHasChanged();
+    }
 
-	private void ClosePopup()
-	{
-		isPopUpOpen = false;
-		StateHasChanged();
-	}
+    private void ClosePopup()
+    {
+        isPopUpOpen = false;
+        StateHasChanged();
+    }
 }
 
 <style>
-	.fixed-bottom-div {
-		position: fixed;
-		bottom: 0;
-		width: 100%;
-		z-index: 1030;
-		padding: 15px;
-	}
+    .fixed-NavMenu {
+        position: fixed;
+        width: 100%;
+        z-index: 1030;
+    }
 
-	.popup-close-button {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		width: 20px;
-		height: 20px;
-		cursor: pointer;
-		z-index: 10;
-	}
+    .fixed-bottom-div {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 1030;
+        padding: 15px;
+    }
+
+    .popup-close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    main {
+        padding-top: 100px; /* Ändern Sie dies nach Bedarf */
+        padding-bottom: 100px; /* Ändern Sie dies nach Bedarf */
+    }
+
+    article.content {
+        overflow-y: auto;
+        height: 100%;
+    }
 </style>

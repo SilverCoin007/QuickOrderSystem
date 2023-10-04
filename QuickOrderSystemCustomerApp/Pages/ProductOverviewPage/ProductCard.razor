@@ -1,0 +1,62 @@
+﻿@using QuickOrderSystemClassLibrary
+
+<div class="product-card">
+    @if (!string.IsNullOrEmpty(Product.ImageData))
+    {
+        <img src="data:image/png;base64,@Product.ImageData" alt="@Product.Name"/>
+    }
+    else
+    {
+        <div class="no-image">No image available</div>
+    }
+    <div class="product-details">
+        <span class="product-name">@Product.Name</span>
+        <span class="product-price">@Product.Price</span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Product Product { get; set; }
+}
+
+<style>
+    .product-card {
+        width: calc(50% - 2rem); /* Damit zwei Karten nebeneinander passen */
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin: 1rem;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .product-card img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .no-image {
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4;
+    }
+
+    .product-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .product-name {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+        color: #777;
+    }
+</style>
