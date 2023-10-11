@@ -1,12 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QuickOrderSystemClassLibrary;
+﻿using System.Text;
+using Newtonsoft.Json;
 
-namespace QuickOrderSystemAdminApp.Data
+namespace QuickOrderSystemClassLibrary.Services.Api
 {
     public class ProductService
     {
@@ -19,7 +14,7 @@ namespace QuickOrderSystemAdminApp.Data
             _baseUrl = baseUrl;
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>?> GetAllAsyncTask()
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/product");
             if (response.IsSuccessStatusCode)
@@ -30,7 +25,7 @@ namespace QuickOrderSystemAdminApp.Data
             return null;
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<Product?> GetByIdAsyncTask(int id)
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/product/{id}");
             if (response.IsSuccessStatusCode)
@@ -41,19 +36,19 @@ namespace QuickOrderSystemAdminApp.Data
             return null;
         }
 
-        public async Task CreateAsync(Product product)
+        public async Task CreateAsyncTask(Product product)
         {
             var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
             await _httpClient.PostAsync($"{_baseUrl}/product", content);
         }
 
-        public async Task UpdateAsync(int id, Product product)
+        public async Task UpdateAsyncTask(int id, Product product)
         {
             var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
             await _httpClient.PutAsync($"{_baseUrl}/product/{id}", content);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsyncTask(int id)
         {
             await _httpClient.DeleteAsync($"{_baseUrl}/product/{id}");
         }

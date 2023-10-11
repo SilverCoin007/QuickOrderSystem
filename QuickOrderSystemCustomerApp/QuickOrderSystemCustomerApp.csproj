@@ -50,9 +50,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\" />
       <Folder Include="Pages\ProductDetailPage\" />
-      <Folder Include="Pages\ShowOrderPage\" />
       <Folder Include="wwwroot\Images\Icons\" />
     </ItemGroup>
 

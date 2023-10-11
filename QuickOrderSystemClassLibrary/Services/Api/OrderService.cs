@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Newtonsoft.Json;
-using QuickOrderSystemClassLibrary;
 
 namespace QuickOrderSystemClassLibrary.Services.Api
 {
@@ -19,7 +14,7 @@ namespace QuickOrderSystemClassLibrary.Services.Api
             _baseUrl = baseUrl;
         }
 
-        public async Task<List<Order>> GetAllAsync()
+        public async Task<List<Order>?> GetAllAsyncTask()
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/order");
             if (response.IsSuccessStatusCode)
@@ -30,7 +25,7 @@ namespace QuickOrderSystemClassLibrary.Services.Api
             return null;
         }
 
-        public async Task<Order> GetByIdAsync(int id)
+        public async Task<Order?> GetByIdAsyncTask(int id)
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}/order/{id}");
             if (response.IsSuccessStatusCode)
@@ -41,19 +36,19 @@ namespace QuickOrderSystemClassLibrary.Services.Api
             return null;
         }
 
-        public async Task CreateAsync(Order order)
+        public async Task CreateAsyncTask(Order order)
         {
             var content = new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json");
             await _httpClient.PostAsync($"{_baseUrl}/order", content);
         }
 
-        public async Task UpdateAsync(int id, Order order)
+        public async Task UpdateAsyncTask(int id, Order order)
         {
             var content = new StringContent(JsonConvert.SerializeObject(order), Encoding.UTF8, "application/json");
             await _httpClient.PutAsync($"{_baseUrl}/order/{id}", content);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsyncTask(int id)
         {
             await _httpClient.DeleteAsync($"{_baseUrl}/order/{id}");
         }

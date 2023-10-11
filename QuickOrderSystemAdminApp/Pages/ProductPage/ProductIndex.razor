@@ -1,0 +1,59 @@
+﻿@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Services.Api
+@inject NavigationManager NavigationManager
+
+@page "/Dishes"
+
+<div class="categories">
+    @if (_category == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <CategoryBox Categories="_category" />
+    }
+</div>
+
+@code {
+    private List<Category> _category;
+    private CategoryService _categoryService;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
+        _categoryService = new CategoryService("https://localhost:7278/api");
+        _category = await _categoryService.GetAllAsyncTask();
+        StateHasChanged();
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (!NavigationManager.Uri.EndsWith("/Dishes")) return;
+        await LoadCategories();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}
+
+<style>
+    .categories {
+        padding: 10px;
+    }
+
+    .popup-content::-webkit-scrollbar {
+        display: none;
+    }
+</style>

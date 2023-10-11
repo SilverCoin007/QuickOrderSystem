@@ -1,6 +1,7 @@
 ﻿@using QuickOrderSystemAdminApp.Data;
 @using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
 @inject PopUpService PopUpService
 
@@ -94,7 +95,7 @@
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.Id);
+        QrCodeModel = await qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -102,7 +103,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsync(QrCodeModel.Id);
+        QrCodeModel = await qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -116,11 +117,11 @@
 
             if (CrudType == CrudTyp.Create)
             {
-                await qrCodeService.CreateAsync(QrCodeModel);
+                await qrCodeService.CreateAsyncTask(QrCodeModel);
             }
             else if (CrudType == CrudTyp.Update)
             {
-                await qrCodeService.UpdateAsync(QrCodeModel.Id, QrCodeModel);
+                await qrCodeService.UpdateAsyncTask(QrCodeModel.Id, QrCodeModel);
             }
         }
 
@@ -131,7 +132,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await qrCodeService.DeleteAsync(QrCodeModel.Id);
+            await qrCodeService.DeleteAsyncTask(QrCodeModel.Id);
         }
 
         ClosePopup();

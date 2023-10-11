@@ -1,0 +1,151 @@
+﻿@using QuickOrderSystemClassLibrary.Services
+@using QuickOrderSystemClassLibrary.Enum
+@using QuickOrderSystemClassLibrary
+@using QuickOrderSystemClassLibrary.Services.Api
+@inject PopUpService PopupService
+
+@foreach (var category in Categories)
+{
+    <div class="category-box">
+        <div class="category-header">
+            <div class="name-and-icon">
+                <img src="data:image/png;base64,@category.ImageData" alt="Category Icon" class="category-icon" />
+                <div class="category-name">@category.Name</div>
+            </div>
+            <img src="Images/Icons/Edit.png" @onclick="() => ShowCategoryPopup(CrudTyp.Read, category)" class="edit-icon" alt="Edit Category" />
+        </div>
+        <div class="category-divider"></div>
+        <div class="products">
+            <ProductBox CategoryId="@category.Id" />
+        </div>
+    </div>
+}
+<button @onclick="() => ShowCategoryPopup(CrudTyp.Create, new Category())" class="add-category-button">
+    <div class="plus-icon">
+        <div class="horizontal"></div>
+        <div class="vertical"></div>
+    </div>
+    New Category
+</button>
+
+@code {
+
+    [Parameter]
+    public List<Category> Categories { get; set; }
+
+
+    private void ShowCategoryPopup(CrudTyp? crudType = null, Category categoryModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        categoryModel ??= new Category();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudCategory));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "CategoryModel", categoryModel);
+            builder.CloseComponent();
+            StateHasChanged();
+        };
+
+        PopupService.Show(content);
+    }
+}
+
+
+<style>
+    .add-category-button {
+        width: 100%;
+        background-color: #E2E2E2;
+        border-radius: 10px;
+        padding: 10px;
+        border: none;
+        margin-bottom: 20px;
+        cursor: pointer;
+        font-size: 18px;
+        text-align: center;
+        color: #444242;
+        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 15px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .plus-icon {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
+
+    .horizontal, .vertical {
+        position: absolute;
+        background-color: #444242;
+        width: 16px;
+        height: 3px;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 100px;
+    }
+
+    .vertical {
+        width: 3px;
+        height: 16px;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+    }
+
+    .category-name {
+        font-size: 18px;
+        margin-bottom: 0px;
+        margin-top: 5px;
+        color: #444242;
+    }
+
+    .category-box {
+        width: 100%;
+        background-color: #E2E2E2;
+        border-radius: 10px;
+        padding: 10px;
+        border: none;
+        margin-bottom: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
+    }
+
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0px;
+    }
+
+    .name-and-icon {
+        display: flex;
+        align-items: center;
+    }
+
+    .category-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+
+    .edit-icon {
+        cursor: pointer;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+    }
+
+    .category-divider {
+        height: 2px;
+        background-color: #444242;
+        margin-top: 3px;
+        margin-bottom: 10px;
+        border-radius: 100px;
+    }
+</style>

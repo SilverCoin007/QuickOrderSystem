@@ -1,0 +1,129 @@
+﻿@using QuickOrderSystemCustomerApp.Data
+@inject ProductCartService CartService
+
+<div class="animated-div" id="shoppingCartContentDiv">
+    <div class="content-area">
+        <div class="cart-products-container">
+            @if (CartItems == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else if (!CartItems.Any())
+            {
+                <p>Your cart is empty.</p>
+            }
+            else
+            {
+                foreach (var item in CartItems)
+                {
+                    <CartItemCard 
+                        CartItem="item" 
+                        OnRemove="(() => RemoveFromCart(item))"
+                        UpdateQuantity="((updatedItem) => UpdateCartAsync(updatedItem))" />
+                }
+            }
+        </div>
+
+        <div class="footer-container">
+            <div class="cart-total-section">
+                <div class="total-label">Total:</div>
+                <div class="total-value">@CartTotal CHF</div>
+            </div>
+            <button class="full-width-button">Order</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CartItem>? CartItems { get; set; }
+    private decimal CartTotal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CartItems = await CartService.GetCartAsync();
+        CartTotal = CartItems?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+
+    private async Task UpdateCartAsync(CartItem item)
+    {
+        await CartService.UpdateProductQuantityAsync(item.Product, item.Quantity);
+        CartItems = await CartService.GetCartAsync();
+        CartTotal = CartItems?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+    
+    private async Task RemoveFromCart(CartItem item)
+    {
+        await CartService.ClearProductFromCartAsync(item.Product);
+        CartItems = await CartService.GetCartAsync();
+        CartTotal = CartItems?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+}
+
+<style>
+    .animated-div {
+        background-color: #F8F8F8;
+        flex-grow: 1;
+        overflow: hidden;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        transition: transform 0.3s;
+        transform: translateY(0);
+        width: 100vw;
+        box-sizing: border-box;
+        position: relative;
+        max-height: calc(100vh);
+        margin: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 70px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        align-content: center;
+    }
+
+    .content-area {
+        overflow: hidden;
+        height: calc(100vh - 2rem /* top padding */ - 2rem /* bottom padding */ - 60px /* approximated footer height */ );
+    }
+
+    .cart-products-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+        max-height: calc(100vh - 2rem /* top padding */ - 2rem /* bottom padding */ - 280px /* footer height including padding */ );
+        padding: 2rem;
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+
+        .cart-products-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+    .footer-container {
+        background-color: #F8F8F8;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 160px;
+        padding: 2rem;
+        padding-top: 1rem;
+    }
+
+    .cart-total-section {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    .full-width-button {
+        width: 100%;
+        padding: 0.5rem 0;
+        background-color: #F59D07;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+

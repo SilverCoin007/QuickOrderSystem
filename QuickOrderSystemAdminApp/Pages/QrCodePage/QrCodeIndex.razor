@@ -1,7 +1,6 @@
-﻿@using QuickOrderSystemAdminApp.Data;
-@using QuickOrderSystemAdminApp.Pages.PopUp;
-@using QuickOrderSystemClassLibrary;
+﻿@using QuickOrderSystemClassLibrary;
 @using QuickOrderSystemClassLibrary.Enum;
+@using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
 @inject PopUpService PopupService
 
@@ -14,13 +13,13 @@
         </tr>
     </thead>
     <tbody>
-        @if (qrCode == null)
+        @if (_qrCode == null)
         {
             <p><em>Loading...</em></p>
         }
         else
         {
-            foreach (var item in qrCode)
+            foreach (var item in _qrCode)
             {
                 <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
                     <td>
@@ -44,8 +43,8 @@
 </button>
 
 @code {
-    private List<QrCode> qrCode;
-    private QrCodeService qrCodeService;
+    private List<QrCode> _qrCode;
+    private QrCodeService _qrCodeService;
 
     private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
     {
@@ -65,8 +64,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        qrCodeService = new QrCodeService("https://localhost:7278/api");
-        qrCode = await qrCodeService.GetAllAsync();
+        _qrCodeService = new QrCodeService("https://localhost:7278/api");
+        _qrCode = await _qrCodeService.GetAllAsyncTask();
     }
 
     protected override void OnInitialized()
@@ -78,8 +77,8 @@
     {
         if (NavigationManager.Uri.EndsWith("/QR-Code"))
         {
-            qrCodeService = new QrCodeService("https://localhost:7278/api");
-            qrCode = await qrCodeService.GetAllAsync();
+            _qrCodeService = new QrCodeService("https://localhost:7278/api");
+            _qrCode = await _qrCodeService.GetAllAsyncTask();
             StateHasChanged();
         }
     }

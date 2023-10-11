@@ -2,6 +2,7 @@
 using QuickOrderSystemAdminApp.Data;
 using Blazored.Modal;
 using QuickOrderSystemClassLibrary.Services.Api;
+using QuickOrderSystemClassLibrary.Services;
 
 namespace QuickOrderSystemAdminApp
 {

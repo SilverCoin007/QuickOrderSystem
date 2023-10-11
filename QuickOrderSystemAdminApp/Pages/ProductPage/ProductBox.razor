@@ -1,0 +1,158 @@
+﻿@using QuickOrderSystemClassLibrary
+@using QuickOrderSystemClassLibrary.Enum
+@using QuickOrderSystemClassLibrary.Services
+@using QuickOrderSystemClassLibrary.Services.Api
+@inject PopUpService PopupService
+@inject NavigationManager NavigationManager
+
+@foreach (var product in Products)
+{
+    <div @onclick="() => ShowProductPopup(CrudTyp.Read, product)" class="product-box">
+        <div class="product-name">@product.Name</div>
+        <div class="product-price">@product.Price CHF</div>
+    </div>
+}
+<button class="add-product-button" @onclick="() => ShowProductPopup(CrudTyp.Create, new Product { CategoryId = CategoryId })">
+    <div class="plus-icon">
+        <div class="horizontal"></div>
+        <div class="vertical"></div>
+    </div>
+    New Product
+</button>
+@code {
+    [Parameter] public int CategoryId { get; set; }
+    private List<Product> Products { get; set; } = new List<Product>();
+    private ProductService _productService;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        _productService = new ProductService("https://localhost:7278/api");
+        var allProducts = await _productService.GetAllAsyncTask();
+        if (allProducts != null)
+        {
+            Products = allProducts.Where(p => p.CategoryId == CategoryId).ToList();
+        }
+        StateHasChanged();
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (!NavigationManager.Uri.EndsWith("/Dishes")) return;
+        await LoadProducts();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    private void ShowProductPopup(CrudTyp? crudType = null, Product productModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        productModel ??= new Product();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudProduct));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "ProductModel", productModel);
+            builder.CloseComponent();
+            StateHasChanged();
+        };
+
+        PopupService.Show(content);
+    }
+}
+
+<style>
+    .product-box, .add-product-button {
+        width: 100%;
+        background-color: #FFFFFF;
+        border-radius: 10px;
+        padding: 10px;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .product-box {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 5px;
+        }
+
+    .product-name {
+        font-size: 14px;
+        margin-top: 5px;
+        color: #444242;
+        align-items: center;
+    }
+
+    .product-price {
+        font-size: 14px;
+        margin-top: 5px;
+        color: #444242;
+        align-items: center;
+    }
+
+    .name-and-icon {
+        display: flex;
+        align-items: center;
+    }
+
+    .plus-icon {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
+
+    .horizontal, .vertical {
+        position: absolute;
+        background-color: #444242;
+        width: 16px;
+        height: 3px;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 100px;
+    }
+
+    .vertical {
+        width: 3px;
+        height: 16px;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+    }
+
+    .add-product-button {
+        width: 100%;
+        background-color: #E2E2E2;
+        border-radius: 10px;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        text-align: center;
+        color: #444242;
+        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 15px;
+    }
+</style>

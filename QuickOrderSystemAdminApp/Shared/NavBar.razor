@@ -22,7 +22,7 @@
 </div>
 
 @code {
-    string activeButton;
+    string _activeButton;
 
     private void NavigateToWebsite() => NavigateTo("Website");
     private void NavigateToDashboard() => NavigateTo("Dashboard");
@@ -32,17 +32,17 @@
     private void NavigateTo(string route)
     {
         NavigationManager.NavigateTo($"/{route}");
-        activeButton = route;
+        _activeButton = route;
     }
 
     private string GetExpressionMarkClass(string buttonId)
     {
-        return activeButton == buttonId ? "ExpressionMark active" : "ExpressionMark";
+        return _activeButton == buttonId ? "ExpressionMark active" : "ExpressionMark";
     }
 
     private string GetImageClass(string buttonId)
     {
-        return activeButton == buttonId ? "image shrink" : "image";
+        return _activeButton == buttonId ? "image shrink" : "image";
     }
 
     [Inject]
@@ -56,6 +56,7 @@
         display: flex;
         justify-content: space-between;
         padding: 10px 20px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
     }
 
         .navbar button {

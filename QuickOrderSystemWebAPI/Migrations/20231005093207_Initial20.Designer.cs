@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickOrderSystemWebAPI.Models;
 
@@ -11,9 +12,11 @@ using QuickOrderSystemWebAPI.Models;
 namespace QuickOrderSystemWebAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class ProductContextModelSnapshot : ModelSnapshot
+    [Migration("20231005093207_Initial20")]
+    partial class Initial20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,7 +74,7 @@ namespace QuickOrderSystemWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -120,16 +123,11 @@ namespace QuickOrderSystemWebAPI.Migrations
 
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Product", b =>
                 {
-                    b.HasOne("QuickOrderSystemClassLibrary.Category", null)
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.HasOne("QuickOrderSystemClassLibrary.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
 
-            modelBuilder.Entity("QuickOrderSystemClassLibrary.Category", b =>
-                {
-                    b.Navigation("Products");
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

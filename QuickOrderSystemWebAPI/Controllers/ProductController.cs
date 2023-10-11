@@ -40,7 +40,7 @@ namespace QuickOrderSystemWebAPI.Controllers
                 return NotFound();
             }
             return product;
-        }
+        }  
 
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickOrderSystemWebAPI.Models;
 
@@ -11,9 +12,11 @@ using QuickOrderSystemWebAPI.Models;
 namespace QuickOrderSystemWebAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class ProductContextModelSnapshot : ModelSnapshot
+    [Migration("20231005105740_AddCategoryRelationship")]
+    partial class AddCategoryRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,11 +123,13 @@ namespace QuickOrderSystemWebAPI.Migrations
 
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Product", b =>
                 {
-                    b.HasOne("QuickOrderSystemClassLibrary.Category", null)
+                    b.HasOne("QuickOrderSystemClassLibrary.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Category", b =>

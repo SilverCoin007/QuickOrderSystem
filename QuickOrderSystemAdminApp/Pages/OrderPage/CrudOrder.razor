@@ -1,5 +1,6 @@
 ﻿@using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
 @inject PopUpService PopUpService
 
@@ -84,7 +85,7 @@
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsync(OrderModel.Id);
+        OrderModel = await orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -92,7 +93,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsync(OrderModel.Id);
+        OrderModel = await orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -101,11 +102,11 @@
     {
         if (CrudType == CrudTyp.Create)
         {
-            await orderService.CreateAsync(OrderModel);
+            await orderService.CreateAsyncTask(OrderModel);
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await orderService.UpdateAsync(OrderModel.Id, OrderModel);
+            await orderService.UpdateAsyncTask(OrderModel.Id, OrderModel);
         }
 
         ClosePopup();
@@ -115,7 +116,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await orderService.DeleteAsync(OrderModel.Id);
+            await orderService.DeleteAsyncTask(OrderModel.Id);
         }
 
         ClosePopup();

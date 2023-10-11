@@ -1,8 +1,9 @@
-﻿@using QuickOrderSystemAdminApp.Pages.PopUp;
-@using QuickOrderSystemClassLibrary;
-@using QuickOrderSystemClassLibrary.Enum;
+﻿@using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Services;
 @inject PopUpService PopupService
+@inject NavigationManager NavigationManager
 
 @page "/Order"
 <table class="table">
@@ -15,13 +16,13 @@
             </tr>
         </thead>
         <tbody>
-            @if (order == null)
+            @if (_order == null)
             {
                 <p><em>Loading...</em></p>
             }
             else
             {
-                @foreach (var item in order)
+                @foreach (var item in _order)
                 {
                     <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
                         <td>@item.TableNumber</td>
@@ -38,8 +39,8 @@
 </table>
 
 @code {
-    private List<Order> order;
-    private OrderService orderService;
+    private List<Order> _order;
+    private OrderService _orderService;
 
     private void ShowCustomPopup(CrudTyp? crudType = null, Order orderModel = null)
     {
@@ -56,11 +57,19 @@
 
         PopupService.Show(content);
     }
-
+    
     protected override async Task OnParametersSetAsync()
     {
-        orderService = new OrderService("https://localhost:7278/api");
-        order = await orderService.GetAllAsync();
+        _orderService = new OrderService("https://localhost:7278/api");
+        _order = await _orderService.GetAllAsyncTask();
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (!NavigationManager.Uri.EndsWith("/Order")) return;
+        _orderService = new OrderService("https://localhost:7278/api");
+        _order = await _orderService.GetAllAsyncTask();
+        StateHasChanged();
     }
 
     protected override void OnInitialized()
@@ -68,22 +77,10 @@
         NavigationManager.LocationChanged += HandleLocationChanged;
     }
 
-    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
-    {
-        if (NavigationManager.Uri.EndsWith("/Order"))
-        {
-            orderService = new OrderService("https://localhost:7278/api");
-            order = await orderService.GetAllAsync();
-            StateHasChanged();
-        }
-    }
-
     public void Dispose()
     {
         NavigationManager.LocationChanged -= HandleLocationChanged;
     }
-    [Inject]
-    private NavigationManager NavigationManager { get; set; }
 }
 
 <style>
