@@ -1,7 +1,45 @@
 ﻿@page "/Account"
+@using QuickOrderSystemClassLibrary.Services
+@inject PopUpService PopupService
 
-<h3>Account</h3>
+<button @onclick="Logout" class="logout-button">Logout</button>
 
 @code {
+    private UserIdService _userIdService;
 
+    protected override async Task OnInitializedAsync()
+    {
+        _userIdService = new UserIdService();
+    }
+
+    private void Logout()
+    {
+        _userIdService.ClearUserId();
+        ShowLoginPopup();
+    }
+
+    private void ShowLoginPopup()
+    {
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(Login));
+            builder.CloseComponent();
+            StateHasChanged();
+        };
+
+        PopupService.Show(content);
+    }
 }
+
+<style>
+    .logout-button {
+        background-color: #F59D07;
+        border: none;
+        border-radius: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        margin: 1rem;
+    }
+</style>

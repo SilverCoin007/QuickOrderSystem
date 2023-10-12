@@ -1,4 +1,5 @@
-﻿<div class="cart-item">
+﻿@using QuickOrderSystemCustomerApp.Data
+<div class="cart-item">
     <div class="product-image-container">
         <img src="@($"data:image/jpeg;base64,{CartItem.Product.ImageData}")" alt="@CartItem.Product.Name" class="product-image" />
     </div>

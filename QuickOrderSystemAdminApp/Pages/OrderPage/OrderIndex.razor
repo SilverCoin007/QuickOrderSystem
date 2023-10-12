@@ -2,6 +2,7 @@
 @using QuickOrderSystemClassLibrary.Services.Api
 @using QuickOrderSystemClassLibrary;
 @using QuickOrderSystemClassLibrary.Services;
+@using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopupService
 @inject NavigationManager NavigationManager
 
@@ -41,6 +42,7 @@
 @code {
     private List<Order> _order;
     private OrderService _orderService;
+    private UserIdService _userIdService;
 
     private void ShowCustomPopup(CrudTyp? crudType = null, Order orderModel = null)
     {
@@ -60,14 +62,17 @@
     
     protected override async Task OnParametersSetAsync()
     {
-        _orderService = new OrderService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _orderService = new OrderService("https://localhost:7278/api", UserIdService.UserId.Value);
+
         _order = await _orderService.GetAllAsyncTask();
     }
 
     private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
         if (!NavigationManager.Uri.EndsWith("/Order")) return;
-        _orderService = new OrderService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _orderService = new OrderService("https://localhost:7278/api", UserIdService.UserId.Value);
         _order = await _orderService.GetAllAsyncTask();
         StateHasChanged();
     }

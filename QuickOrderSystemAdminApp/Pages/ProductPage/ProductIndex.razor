@@ -1,5 +1,6 @@
 ﻿@using QuickOrderSystemClassLibrary;
 @using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemClassLibrary.Services
 @inject NavigationManager NavigationManager
 
 @page "/Dishes"
@@ -18,6 +19,7 @@
 @code {
     private List<Category> _category;
     private CategoryService _categoryService;
+    private UserIdService _userIdService;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -26,7 +28,8 @@
 
     private async Task LoadCategories()
     {
-        _categoryService = new CategoryService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _categoryService = new CategoryService("https://localhost:7278/api", UserIdService.UserId.Value);
         _category = await _categoryService.GetAllAsyncTask();
         StateHasChanged();
     }

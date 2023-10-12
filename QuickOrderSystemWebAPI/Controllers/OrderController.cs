@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuickOrderSystemWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using QuickOrderSystemClassLibrary;
+using System.Linq;
+using System.Security.Claims;
 
 namespace QuickOrderSystemWebAPI.Controllers
 {
@@ -16,16 +17,25 @@ namespace QuickOrderSystemWebAPI.Controllers
             _dbContext = dbContext;
         }
 
+        private int GetCurrentUserIdFromHeader()
+        {
+            var userIdHeader = Request.Headers["UserId"].FirstOrDefault();
+            return int.TryParse(userIdHeader, out var userId) ? userId : 0;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _dbContext.Orders.ToListAsync();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return await _dbContext.Orders.Where(o => o.UserId == currentUserId).ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrders(int id)
         {
-            var order = await _dbContext.Orders.FindAsync(id);
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var order = await _dbContext.Orders.Where(o => o.UserId == currentUserId && o.Id == id).FirstOrDefaultAsync();
+
             if (order == null)
             {
                 return NotFound();
@@ -34,8 +44,11 @@ namespace QuickOrderSystemWebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Order>> PostProduct(Order order)
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
+            var currentUserId = GetCurrentUserIdFromHeader();
+            order.UserId = currentUserId;
+
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync();
 
@@ -49,6 +62,13 @@ namespace QuickOrderSystemWebAPI.Controllers
             {
                 return BadRequest();
             }
+
+            var currentUserId = GetCurrentUserIdFromHeader();
+            if (order.UserId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
             _dbContext.Entry(order).State = EntityState.Modified;
 
             try
@@ -57,7 +77,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BrandAvailable(id))
+                if (!OrderAvailable(id))
                 {
                     return NotFound();
                 }
@@ -69,22 +89,24 @@ namespace QuickOrderSystemWebAPI.Controllers
             return Ok();
         }
 
-        private bool BrandAvailable(int id)
+        private bool OrderAvailable(int id)
         {
-            return (_dbContext.Orders?.Any(x => x.Id == id)).GetValueOrDefault();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return (_dbContext.Orders.Any(x => x.Id == id && x.UserId == currentUserId));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            var order = await _dbContext.Orders.FindAsync(id);
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var order = await _dbContext.Orders.Where(o => o.UserId == currentUserId && o.Id == id).FirstOrDefaultAsync();
+
             if (order == null)
             {
                 return NotFound();
             }
 
             _dbContext.Orders.Remove(order);
-
             await _dbContext.SaveChangesAsync();
 
             return Ok();

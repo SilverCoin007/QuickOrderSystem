@@ -2,6 +2,7 @@
 @using QuickOrderSystemClassLibrary.Enum
 @using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopupService
 @inject NavigationManager NavigationManager
 
@@ -23,6 +24,7 @@
     [Parameter] public int CategoryId { get; set; }
     private List<Product> Products { get; set; } = new List<Product>();
     private ProductService _productService;
+    private UserIdService _userIdService;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -31,7 +33,9 @@
 
     private async Task LoadProducts()
     {
-        _productService = new ProductService("https://localhost:7278/api");
+
+        _userIdService = new UserIdService();
+        _productService = new ProductService("https://localhost:7278/api", UserIdService.UserId.Value);
         var allProducts = await _productService.GetAllAsyncTask();
         if (allProducts != null)
         {

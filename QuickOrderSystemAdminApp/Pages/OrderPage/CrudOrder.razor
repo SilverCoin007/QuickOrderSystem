@@ -2,6 +2,7 @@
 @using QuickOrderSystemClassLibrary;
 @using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopUpService
 
 <div class="container">
@@ -74,18 +75,20 @@
 @code {
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public Order OrderModel { get; set; }
-
-    private OrderService orderService;
+    private OrderService _orderService;
+    private UserIdService _userIdService;
 
     protected override async Task OnInitializedAsync()
     {
-        orderService = new OrderService("https://localhost:7278/api");
+
+        _userIdService = new UserIdService();
+        _orderService = new OrderService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsyncTask(OrderModel.Id);
+        OrderModel = await _orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -93,7 +96,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        OrderModel = await orderService.GetByIdAsyncTask(OrderModel.Id);
+        OrderModel = await _orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -102,11 +105,11 @@
     {
         if (CrudType == CrudTyp.Create)
         {
-            await orderService.CreateAsyncTask(OrderModel);
+            await _orderService.CreateAsyncTask(OrderModel);
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await orderService.UpdateAsyncTask(OrderModel.Id, OrderModel);
+            await _orderService.UpdateAsyncTask(OrderModel.Id, OrderModel);
         }
 
         ClosePopup();
@@ -116,7 +119,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await orderService.DeleteAsyncTask(OrderModel.Id);
+            await _orderService.DeleteAsyncTask(OrderModel.Id);
         }
 
         ClosePopup();

@@ -1,4 +1,5 @@
 ﻿@using QuickOrderSystemClassLibrary.Enum
+@using QuickOrderSystemAdminApp.Data
 @using QuickOrderSystemClassLibrary
 @using QuickOrderSystemClassLibrary.Services.Api
 @using System.IO
@@ -21,9 +22,9 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(imageSizeErrorMessage))
+            @if (!string.IsNullOrEmpty(_imageSizeErrorMessage))
             {
-                <div>@imageSizeErrorMessage</div>
+                <div>@_imageSizeErrorMessage</div>
             }
             else if (!string.IsNullOrEmpty(CategoryModel.ImageData))
             {
@@ -79,25 +80,26 @@
 @code {
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public Category CategoryModel { get; set; }
-
-    private CategoryService categoryService;
-    private string imageSizeErrorMessage = null;
+    private UserIdService _userIdService;
+    private CategoryService _categoryService;
+    private string _imageSizeErrorMessage = null;
 
     protected override async Task OnInitializedAsync()
     {
-        categoryService = new CategoryService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _categoryService = new CategoryService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
     async Task OnChange(InputFileChangeEventArgs e)
     {
         var file = e.File;
 
-        var maxSizeInMB = 5;
-        var maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+        const int maxSizeInMb = 5;
+        var maxSizeInBytes = maxSizeInMb * 1024 * 1024;
 
         if (file.Size > maxSizeInBytes)
         {
-            imageSizeErrorMessage = $"Die Datei ist zu groß. Bitte laden Sie eine Datei hoch, die kleiner als {maxSizeInMB} MB ist.";
+            _imageSizeErrorMessage = $"Die Datei ist zu groß. Bitte laden Sie eine Datei hoch, die kleiner als {maxSizeInMb} MB ist.";
             return;
         }
 
@@ -106,19 +108,19 @@
         var base64Image = Convert.ToBase64String(memoryStream.ToArray());
 
         CategoryModel.ImageData = base64Image;
-        imageSizeErrorMessage = null;
+        _imageSizeErrorMessage = null;
     }
 
     private async Task SwitchToEditMode()
     {
-        CategoryModel = await categoryService.GetByIdAsyncTask(CategoryModel.Id);
+        CategoryModel = await _categoryService.GetByIdAsyncTask(CategoryModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged();
     }
 
     private async Task ShowDeleteConfirmation()
     {
-        CategoryModel = await categoryService.GetByIdAsyncTask(CategoryModel.Id);
+        CategoryModel = await _categoryService.GetByIdAsyncTask(CategoryModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged();
     }
@@ -127,11 +129,11 @@
     {
         if (CrudType == CrudTyp.Create)
         {
-            await categoryService.CreateAsyncTask(CategoryModel);
+            await _categoryService.CreateAsyncTask(CategoryModel);
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await categoryService.UpdateAsyncTask(CategoryModel.Id, CategoryModel);
+            await _categoryService.UpdateAsyncTask(CategoryModel.Id, CategoryModel);
         }
 
         ClosePopup();
@@ -141,7 +143,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await categoryService.DeleteAsyncTask(CategoryModel.Id);
+            await _categoryService.DeleteAsyncTask(CategoryModel.Id);
         }
 
         ClosePopup();

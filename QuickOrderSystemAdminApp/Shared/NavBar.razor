@@ -24,6 +24,14 @@
 @code {
     string _activeButton;
 
+    protected override Task OnParametersSetAsync()
+    {
+        var currentUri = new Uri(NavigationManager.Uri);
+        var currentPath = currentUri.AbsolutePath.Trim('/').Split('/')[0];
+        _activeButton = string.IsNullOrWhiteSpace(currentPath) ? "Order" : currentPath;
+        return base.OnParametersSetAsync();
+    }
+
     private void NavigateToWebsite() => NavigateTo("Website");
     private void NavigateToDashboard() => NavigateTo("Dashboard");
     private void NavigateToOrder() => NavigateTo("Order");

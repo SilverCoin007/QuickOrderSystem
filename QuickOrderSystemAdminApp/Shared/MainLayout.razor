@@ -1,46 +1,65 @@
 ﻿@using QuickOrderSystemClassLibrary.Services
+@using QuickOrderSystemClassLibrary.Services.UserService
+@using QuickOrderSystemAdminApp.Pages.AccountPage
+@using QuickOrderSystemClassLibrary
+@using QuickOrderSystemClassLibrary.Enum
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Configuration
 @inherits LayoutComponentBase
 @inject PopUpService PopupService
-<div class="page">
 
+<div class="page">
     <div class="fixed-NavMenu">
         <NavMenu />
     </div>
-
     <main>
         <article class="content">
-            <PopUp IsOpen="@isPopUpOpen" PopupContent="popupContent"></PopUp>
+            <PopUp IsOpen="@_isPopUpOpen" PopupContent="_popupContent"></PopUp>
             @Body
         </article>
     </main>
-
     <div class="fixed-bottom-div">
         <NavBar />
     </div>
 </div>
 
 @code {
-    private bool isPopUpOpen = false;
-    private RenderFragment popupContent;
+    private bool _isPopUpOpen = false;
+    private RenderFragment _popupContent;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         PopupService.OnShow += ShowPopup;
         PopupService.OnClose += ClosePopup;
+        
+        await base.OnInitializedAsync();
+
+        ShowPopup(LoginPopupContent());
+    }
+    public void Dispose()
+    {
+        PopupService.OnShow -= ShowPopup;
+        PopupService.OnClose -= ClosePopup;
     }
 
     private void ShowPopup(RenderFragment content)
     {
-        popupContent = content;
-        isPopUpOpen = true;
+        _popupContent = content;
+        _isPopUpOpen = true;
         StateHasChanged();
     }
 
     private void ClosePopup()
     {
-        isPopUpOpen = false;
+        _isPopUpOpen = false;
         StateHasChanged();
     }
+
+    private RenderFragment LoginPopupContent() => builder =>
+    {
+        builder.OpenComponent(0, typeof(Login));
+        builder.CloseComponent();
+    };
 }
 
 <style>

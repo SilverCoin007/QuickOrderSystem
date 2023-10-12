@@ -2,6 +2,7 @@
 @using QuickOrderSystemClassLibrary
 @using QuickOrderSystemClassLibrary.Services.Api
 @using System.IO
+@using QuickOrderSystemAdminApp.Data
 @using QuickOrderSystemClassLibrary.Services
 @inject PopUpService PopUpService
 
@@ -21,9 +22,9 @@
                 </div>
             }
 
-            @if (!string.IsNullOrEmpty(imageSizeErrorMessage))
+            @if (!string.IsNullOrEmpty(_imageSizeErrorMessage))
             {
-                <div>@imageSizeErrorMessage</div>
+                <div>@_imageSizeErrorMessage</div>
             }
             else if (!string.IsNullOrEmpty(ProductModel.ImageData))
             {
@@ -95,13 +96,15 @@
 @code {
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public Product ProductModel { get; set; }
-
-    private ProductService productService;
-    private string imageSizeErrorMessage = null;
+    private ProductService _productService;
+    private UserIdService _userIdService;
+    private string _imageSizeErrorMessage = null;
 
     protected override async Task OnInitializedAsync()
     {
-        productService = new ProductService("https://localhost:7278/api");
+
+        _userIdService = new UserIdService();
+        _productService = new ProductService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
     async Task OnChange(InputFileChangeEventArgs e)
@@ -113,7 +116,7 @@
 
         if (file.Size > maxSizeInBytes)
         {
-            imageSizeErrorMessage = $"Die Datei ist zu groß. Bitte laden Sie eine Datei hoch, die kleiner als {maxSizeInMB} MB ist.";
+            _imageSizeErrorMessage = $"Die Datei ist zu groß. Bitte laden Sie eine Datei hoch, die kleiner als {maxSizeInMB} MB ist.";
             return;
         }
 
@@ -122,19 +125,19 @@
         var base64Image = Convert.ToBase64String(memoryStream.ToArray());
 
         ProductModel.ImageData = base64Image;
-        imageSizeErrorMessage = null;
+        _imageSizeErrorMessage = null;
     }
 
     private async Task SwitchToEditMode()
     {
-        ProductModel = await productService.GetByIdAsyncTask(ProductModel.Id);
+        ProductModel = await _productService.GetByIdAsyncTask(ProductModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged();
     }
 
     private async Task ShowDeleteConfirmation()
     {
-        ProductModel = await productService.GetByIdAsyncTask(ProductModel.Id);
+        ProductModel = await _productService.GetByIdAsyncTask(ProductModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged();
     }
@@ -143,11 +146,11 @@
     {
         if (CrudType == CrudTyp.Create)
         {
-            await productService.CreateAsyncTask(ProductModel);
+            await _productService.CreateAsyncTask(ProductModel);
         }
         else if (CrudType == CrudTyp.Update)
         {
-            await productService.UpdateAsyncTask(ProductModel.Id, ProductModel);
+            await _productService.UpdateAsyncTask(ProductModel.Id, ProductModel);
         }
 
         ClosePopup();
@@ -157,7 +160,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await productService.DeleteAsyncTask(ProductModel.Id);
+            await _productService.DeleteAsyncTask(ProductModel.Id);
         }
 
         ClosePopup();

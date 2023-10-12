@@ -1,0 +1,135 @@
+﻿@page "/register"
+@using QuickOrderSystemClassLibrary.Services
+@using QuickOrderSystemClassLibrary.Services.Api
+@inject PopUpService PopupService
+
+<div class="container">
+    <h3 class="title">Register</h3>
+    <div class="info-text">Please Sign Up to continue.</div>
+    <div class="input-container">
+        <label>Username</label>
+        <input @bind="Username" type="text" />
+    </div>
+    <div class="input-container">
+        <label>Password</label>
+        <input @bind="Password" type="password" />
+    </div>
+    <div class="input-container">
+        <label>Confirm Password</label>
+        <input @bind="ConfirmPassword" type="password" />
+    </div>
+    <button @onclick="HandleRegister" class="register-button">Register</button>
+    <div class="login-text">
+        You already have an account? <a @onclick="ShowLoginPopup"><strong>Log In</strong></a>
+    </div>
+</div>
+
+@code {
+    private string Username { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private string ConfirmPassword { get; set; } = string.Empty;
+    private AuthService _authService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authService = new AuthService("https://localhost:7278/api");
+    }
+
+    private async Task HandleRegister()
+    {
+        if (Password != ConfirmPassword)
+        {
+            return;
+        }
+
+        var registeredUser = await _authService.RegisterAsync(Username, Password);
+        if (registeredUser != null)
+        {
+            ShowLoginPopup();
+        }
+        else
+        {
+
+        }
+    }
+
+    private void ShowLoginPopup()
+    {
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(Login));
+            builder.CloseComponent();
+            StateHasChanged();
+        };
+
+        PopupService.Show(content);
+    }
+}
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .title {
+        text-align: left;
+        font-weight: bold;
+        width: 100%;
+        margin-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .info-text {
+        font-size: 0.8em;
+        text-align: left;
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .input-container {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+        .input-container label {
+            font-size: 0.8em;
+            display: block;
+            text-align: left;
+        }
+
+    input {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        margin: 0;
+        width: 100%;
+    }
+
+    button.register-button {
+        background-color: #F59D07;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        color: white;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .login-text {
+        margin-top: 10px;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+        .login-text a {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+</style>

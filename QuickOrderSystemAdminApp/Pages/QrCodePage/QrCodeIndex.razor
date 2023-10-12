@@ -2,6 +2,7 @@
 @using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopupService
 
 @page "/QR-Code"
@@ -45,6 +46,7 @@
 @code {
     private List<QrCode> _qrCode;
     private QrCodeService _qrCodeService;
+    private UserIdService _userIdService;
 
     private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
     {
@@ -64,7 +66,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _qrCodeService = new QrCodeService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
         _qrCode = await _qrCodeService.GetAllAsyncTask();
     }
 
@@ -77,7 +80,8 @@
     {
         if (NavigationManager.Uri.EndsWith("/QR-Code"))
         {
-            _qrCodeService = new QrCodeService("https://localhost:7278/api");
+            _userIdService = new UserIdService();
+            _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
             _qrCode = await _qrCodeService.GetAllAsyncTask();
             StateHasChanged();
         }

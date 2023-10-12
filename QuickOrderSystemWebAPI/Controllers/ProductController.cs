@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using QuickOrderSystemWebAPI.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuickOrderSystemClassLibrary;
+using System.Linq;
+using System.Security.Claims;
 
 namespace QuickOrderSystemWebAPI.Controllers
 {
@@ -17,56 +17,67 @@ namespace QuickOrderSystemWebAPI.Controllers
             _dbContext = dbContext;
         }
 
+        private int GetCurrentUserIdFromHeader()
+        {
+            var userIdHeader = Request.Headers["UserId"].FirstOrDefault();
+            return int.TryParse(userIdHeader, out var userId) ? userId : 0;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            if(_dbContext.Products == null)
-            {
-                return NotFound();
-            }
-            return await _dbContext.Products.ToListAsync();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return await _dbContext.Products.Where(p => p.UserId == currentUserId).ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProducts(int id)
         {
-            if (_dbContext.Products == null)
-            {
-                return NotFound();
-            }
-            var product = await _dbContext.Products.FindAsync(id);
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var product = await _dbContext.Products.Where(p => p.UserId == currentUserId && p.Id == id).FirstOrDefaultAsync();
+
             if (product == null)
             {
                 return NotFound();
             }
             return product;
-        }  
+        }
 
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
+            var currentUserId = GetCurrentUserIdFromHeader();
+            product.UserId = currentUserId;
+
             _dbContext.Products.Add(product);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProducts), new {id = product.Id }, product);
+            return CreatedAtAction(nameof(GetProducts), new { id = product.Id }, product);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutProduct(int id,Product product)
+        public async Task<ActionResult> PutProduct(int id, Product product)
         {
-            if(id != product.Id)
+            if (id != product.Id)
             {
                 return BadRequest();
             }
+
+            var currentUserId = GetCurrentUserIdFromHeader();
+            if (product.UserId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
             _dbContext.Entry(product).State = EntityState.Modified;
 
             try
             {
                 await _dbContext.SaveChangesAsync();
             }
-            catch(DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
-                if(!BrandAvailable(id))
+                if (!ProductAvailable(id))
                 {
                     return NotFound();
                 }
@@ -78,27 +89,24 @@ namespace QuickOrderSystemWebAPI.Controllers
             return Ok();
         }
 
-        private bool BrandAvailable(int id)
+        private bool ProductAvailable(int id)
         {
-            return (_dbContext.Products?.Any(x => x.Id == id)).GetValueOrDefault();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return _dbContext.Products.Any(p => p.Id == id && p.UserId == currentUserId);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if(_dbContext.Products == null)
-            {
-                return NotFound();
-            }
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var product = await _dbContext.Products.Where(p => p.UserId == currentUserId && p.Id == id).FirstOrDefaultAsync();
 
-            var product = await _dbContext.Products.FindAsync(id);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
             _dbContext.Products.Remove(product);
-
             await _dbContext.SaveChangesAsync();
 
             return Ok();

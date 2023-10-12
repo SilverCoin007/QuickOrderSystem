@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using QuickOrderSystemWebAPI.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuickOrderSystemClassLibrary;
+using System.Linq;
+using System.Security.Claims;
 
 namespace QuickOrderSystemWebAPI.Controllers
 {
@@ -17,24 +17,25 @@ namespace QuickOrderSystemWebAPI.Controllers
             _dbContext = dbContext;
         }
 
+        private int GetCurrentUserIdFromHeader()
+        {
+            var userIdHeader = Request.Headers["UserId"].FirstOrDefault();
+            return int.TryParse(userIdHeader, out var userId) ? userId : 0;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QrCode>>> GetQrCodes()
         {
-            if (_dbContext.Products == null)
-            {
-                return NotFound();
-            }
-            return await _dbContext.QrCodes.ToListAsync();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return await _dbContext.QrCodes.Where(q => q.UserId == currentUserId).ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<QrCode>> GetQrCodes(int id)
         {
-            if (_dbContext.QrCodes == null)
-            {
-                return NotFound();
-            }
-            var qrCode = await _dbContext.QrCodes.FindAsync(id);
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var qrCode = await _dbContext.QrCodes.Where(q => q.UserId == currentUserId && q.Id == id).FirstOrDefaultAsync();
+
             if (qrCode == null)
             {
                 return NotFound();
@@ -45,6 +46,9 @@ namespace QuickOrderSystemWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<QrCode>> PostQrCode(QrCode qrCode)
         {
+            var currentUserId = GetCurrentUserIdFromHeader();
+            qrCode.UserId = currentUserId;
+
             _dbContext.QrCodes.Add(qrCode);
             await _dbContext.SaveChangesAsync();
 
@@ -58,6 +62,13 @@ namespace QuickOrderSystemWebAPI.Controllers
             {
                 return BadRequest();
             }
+
+            var currentUserId = GetCurrentUserIdFromHeader();
+            if (qrCode.UserId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
             _dbContext.Entry(qrCode).State = EntityState.Modified;
 
             try
@@ -66,7 +77,7 @@ namespace QuickOrderSystemWebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BrandAvailable(id))
+                if (!QrCodeAvailable(id))
                 {
                     return NotFound();
                 }
@@ -78,27 +89,24 @@ namespace QuickOrderSystemWebAPI.Controllers
             return Ok();
         }
 
-        private bool BrandAvailable(int id)
+        private bool QrCodeAvailable(int id)
         {
-            return (_dbContext.QrCodes?.Any(x => x.Id == id)).GetValueOrDefault();
+            var currentUserId = GetCurrentUserIdFromHeader();
+            return _dbContext.QrCodes.Any(q => q.Id == id && q.UserId == currentUserId);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQrCode(int id)
         {
-            if (_dbContext.QrCodes == null)
-            {
-                return NotFound();
-            }
+            var currentUserId = GetCurrentUserIdFromHeader();
+            var qrCode = await _dbContext.QrCodes.Where(q => q.UserId == currentUserId && q.Id == id).FirstOrDefaultAsync();
 
-            var qrCode = await _dbContext.QrCodes.FindAsync(id);
             if (qrCode == null)
             {
                 return NotFound();
             }
 
             _dbContext.QrCodes.Remove(qrCode);
-
             await _dbContext.SaveChangesAsync();
 
             return Ok();

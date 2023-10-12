@@ -83,19 +83,20 @@
 @code {
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public QrCode QrCodeModel { get; set; }
-
-    private QrCodeService qrCodeService;
-    private GenerateQRCode qrCodeGenerator = new GenerateQRCode();
+    private QrCodeService _qrCodeService;
+    private readonly GenerateQRCode _qrCodeGenerator = new GenerateQRCode();
+    private UserIdService _userIdService;
 
     protected override async Task OnInitializedAsync()
     {
-        qrCodeService = new QrCodeService("https://localhost:7278/api");
+        _userIdService = new UserIdService();
+        _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
     private async Task SwitchToEditMode()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
+        QrCodeModel = await _qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Update;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -103,7 +104,7 @@
     private async Task ShowDeleteConfirmation()
     {
         // Aktualisieren Sie die Daten für das aktuelle Produkt
-        QrCodeModel = await qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
+        QrCodeModel = await _qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Delete;
         StateHasChanged(); // Aktualisieren der UI
     }
@@ -113,15 +114,15 @@
         if (CrudType == CrudTyp.Create || CrudType == CrudTyp.Update)
         {
             // Generiere neuen QR-Code
-            QrCodeModel.ImageData = qrCodeGenerator.GenerateQRCodeAsBase64String(QrCodeModel.Url);
+            QrCodeModel.ImageData = _qrCodeGenerator.GenerateQRCodeAsBase64String(QrCodeModel.Url);
 
             if (CrudType == CrudTyp.Create)
             {
-                await qrCodeService.CreateAsyncTask(QrCodeModel);
+                await _qrCodeService.CreateAsyncTask(QrCodeModel);
             }
             else if (CrudType == CrudTyp.Update)
             {
-                await qrCodeService.UpdateAsyncTask(QrCodeModel.Id, QrCodeModel);
+                await _qrCodeService.UpdateAsyncTask(QrCodeModel.Id, QrCodeModel);
             }
         }
 
@@ -132,7 +133,7 @@
     {
         if (CrudType == CrudTyp.Delete)
         {
-            await qrCodeService.DeleteAsyncTask(QrCodeModel.Id);
+            await _qrCodeService.DeleteAsyncTask(QrCodeModel.Id);
         }
 
         ClosePopup();

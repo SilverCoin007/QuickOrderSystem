@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+﻿using Blazored.LocalStorage;
 using QuickOrderSystemAdminApp.Data;
 using Blazored.Modal;
 using QuickOrderSystemClassLibrary.Services.Api;
 using QuickOrderSystemClassLibrary.Services;
+using QuickOrderSystemClassLibrary.Services.UserService;
 
 namespace QuickOrderSystemAdminApp
 {
     public static class MauiProgram
-    {
-        public static MauiApp CreateMauiApp()
+    { public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
             builder
@@ -19,8 +19,9 @@ namespace QuickOrderSystemAdminApp
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddBlazoredModal();
-#if DEBUG
+            builder.Services.AddBlazoredModal(); 
+            builder.Services.AddBlazoredLocalStorage();
+            #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 			builder.Services.AddSingleton<PopUpService>();
