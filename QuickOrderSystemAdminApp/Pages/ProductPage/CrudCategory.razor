@@ -3,10 +3,14 @@
 @using QuickOrderSystemClassLibrary
 @using QuickOrderSystemClassLibrary.Services.Api
 @using System.IO
-@using QuickOrderSystemClassLibrary.Services
 @inject PopUpService PopUpService
 
+<div class="popup-close" @onclick="ClosePopup">
+    <div class="popup-close-line1"></div>
+    <div class="popup-close-line2"></div>
+</div>
 <div class="container">
+    
     @if (CrudType != CrudTyp.Delete)
     {
         <div class="form-group custom-input">
@@ -17,7 +21,7 @@
                 <div class="form-group custom-input">
                     <div class="upload-button-wrapper">
                         <button class="upload-button">Upload</button>
-                        <InputFile OnChange="OnChange" accept="image/png, image/jpeg, image/gif" />
+                        <InputFile OnChange="OnChange" accept="image/png, image/jpeg, image/gif"/>
                     </div>
                 </div>
             }
@@ -29,7 +33,7 @@
             else if (!string.IsNullOrEmpty(CategoryModel.ImageData))
             {
                 <div>
-                    <img class="Image-to-upload" src="data:image/png;base64,@CategoryModel.ImageData" />
+                    <img class="Image-to-upload" src="data:image/png;base64,@CategoryModel.ImageData"/>
                 </div>
             }
             else
@@ -42,7 +46,7 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="CategoryModel.Name"
+                   @bind="CategoryModel.Name"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
     }
@@ -80,13 +84,11 @@
 @code {
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public Category CategoryModel { get; set; }
-    private UserIdService _userIdService;
     private CategoryService _categoryService;
     private string _imageSizeErrorMessage = null;
 
     protected override async Task OnInitializedAsync()
     {
-        _userIdService = new UserIdService();
         _categoryService = new CategoryService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
@@ -160,6 +162,14 @@
 }
 
 <style>
+    .popup-close-line1 {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .popup-close-line2 {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
     .upload-button {
         background-color: #F59D07 !important;
         border: none !important;

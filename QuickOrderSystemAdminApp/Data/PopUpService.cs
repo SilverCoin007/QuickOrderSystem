@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace QuickOrderSystemClassLibrary.Services
+namespace QuickOrderSystemAdminApp.Data
 {
     public class PopUpService
     {

@@ -18,7 +18,7 @@ namespace QuickOrderSystemClassLibrary.Services.Api
 
         private void AddUserIdHeader()
         {
-            _httpClient.DefaultRequestHeaders.Remove("UserId"); // Remove existing header to ensure we don't add it multiple times
+            _httpClient.DefaultRequestHeaders.Remove("UserId");
             _httpClient.DefaultRequestHeaders.Add("UserId", _userId.ToString());
         }
 

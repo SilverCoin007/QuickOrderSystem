@@ -1,0 +1,51 @@
+﻿@using QuickOrderSystemCustomerWebApp.Data
+@using QuickOrderSystemClassLibrary
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject DataService DataService
+@inherits LayoutComponentBase
+
+@if (_isLoaded)
+{
+    <div class="page">
+        <main>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}
+else
+{
+    <p>Daten werden geladen...</p>
+}
+@code {
+    private int _userId;
+    private int _tableNumber;
+    private bool _isLoaded = false;
+    private List<Product>? _products;
+    private List<Category>? _categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var userIdQueryParam = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("userId");
+        var tableNumberQueryParam = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("tableId");
+
+        if (!Http.DefaultRequestHeaders.Contains("UserId"))
+        {
+            Http.DefaultRequestHeaders.Add("UserId", userIdQueryParam);
+        }
+        if (!string.IsNullOrEmpty(userIdQueryParam) && !string.IsNullOrEmpty(tableNumberQueryParam))
+        {
+            if (int.TryParse(userIdQueryParam, out _userId) && int.TryParse(tableNumberQueryParam, out _tableNumber))
+            {
+                _products = await Http.GetFromJsonAsync<List<Product>>("/api/Product");
+                _categories = await Http.GetFromJsonAsync<List<Category>>("/api/Category");
+
+                DataService.SetUserId(_userId, _tableNumber, _products, _categories);
+                _isLoaded = true;
+            }
+        }
+    }
+}

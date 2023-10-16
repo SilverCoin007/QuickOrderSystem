@@ -1,5 +1,6 @@
 ﻿@using QuickOrderSystemClassLibrary.Services.Api
 @using QuickOrderSystemClassLibrary
+@using QuickOrderSystemCustomerApp.Data
 
 @if (_products == null)
 {
@@ -28,7 +29,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _productService = new ProductService("https://localhost:7278/api");
+        _productService = new ProductService("https://localhost:7278/api", QrCodeDataService.UserId.Value);
         _products = await _productService.GetAllAsyncTask();
 
         UpdateFilteredProducts();

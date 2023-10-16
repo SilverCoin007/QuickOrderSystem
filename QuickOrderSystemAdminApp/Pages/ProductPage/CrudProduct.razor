@@ -6,6 +6,10 @@
 @using QuickOrderSystemClassLibrary.Services
 @inject PopUpService PopUpService
 
+<div class="popup-close" @onclick="ClosePopup">
+    <div class="popup-close-line1"></div>
+    <div class="popup-close-line2"></div>
+</div>
 <div class="container">
     @if (CrudType != CrudTyp.Delete)
     {
@@ -177,6 +181,14 @@
 }
 
 <style>
+    .popup-close-line1 {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .popup-close-line2 {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
     .upload-button {
         background-color: #F59D07 !important;
         border: none !important;

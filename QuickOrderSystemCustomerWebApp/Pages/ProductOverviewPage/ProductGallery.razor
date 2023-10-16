@@ -1,0 +1,86 @@
+﻿@using QuickOrderSystemClassLibrary.Services.Api
+@using QuickOrderSystemClassLibrary
+@using QuickOrderSystemCustomerWebApp.Data
+@inject HttpClient Http
+@inject DataService DataService
+
+@if (_products == null)
+{
+    <p><em>Load Product...</em></p>
+}
+else
+{
+    <div class="products-container">
+        @if (_filteredProducts != null)
+        {
+            foreach (var product in _filteredProducts)
+            {
+                <ProductCard Product="@product"/>
+            }
+        }
+    </div>
+}
+
+@code {
+    [Parameter] 
+    public int SelectedCategoryId { get; set; }
+    private List<Product>? _products;
+    private List<Product>? _filteredProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (DataService.Product != null) _products = DataService.Product.ToList();
+
+        UpdateFilteredProducts();
+    }
+
+    protected override void OnParametersSet()
+    {
+        UpdateFilteredProducts();
+    }
+
+    private void SetCategoryFilter(int categoryId)
+    {
+        SelectedCategoryId = categoryId;
+        UpdateFilteredProducts();
+    }
+
+    private void UpdateFilteredProducts()
+    {
+        if (SelectedCategoryId == -1 && _products != null)
+        {
+            _filteredProducts = _products;
+        }
+        else
+        {
+            _filteredProducts = _products?.Where(p => p.CategoryId == SelectedCategoryId).ToList();
+        }
+    }
+
+
+}
+
+<style>
+    .products-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .category-filter {
+        display: flex;
+        justify-content: start;
+        gap: 1rem;
+    }
+
+        .category-filter div {
+            cursor: pointer;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+        }
+
+        .category-filter .selected {
+            background-color: #F59D07;
+            color: white;
+        }
+</style>

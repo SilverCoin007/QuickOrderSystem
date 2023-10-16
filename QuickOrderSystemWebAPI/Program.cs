@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<DatabaseContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("QuickOrderingSystemCS")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("QuickOrderingSystemCS")));
 
 builder.Services.AddControllers();
 
@@ -15,11 +15,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options => options.AddPolicy(name: "NgOrigins",
-    policy =>
-    {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
-    }));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowBlazorOrigin",
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:7185", 
+                "http://localhost:5080")
+                .WithHeaders("UserId")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -27,12 +35,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); 
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+app.UseRouting();
+
+app.UseCors("AllowBlazorOrigin");
 
 app.UseAuthorization();
 

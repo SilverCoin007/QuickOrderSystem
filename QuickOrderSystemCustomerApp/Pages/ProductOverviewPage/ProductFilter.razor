@@ -1,5 +1,6 @@
 ﻿@using QuickOrderSystemClassLibrary.Services.Api
 @using QuickOrderSystemClassLibrary
+@using QuickOrderSystemCustomerApp.Data
 
 <div class="category-filter">
     @if (_categories == null)
@@ -30,11 +31,11 @@
     public EventCallback<int> OnCategorySelected { get; set; }
     private CategoryService _categoryService;
     private List<Category>? _categories;
-    private int _selectedCategoryId = 1; 
+    private int _selectedCategoryId = 1;
 
     protected override async Task OnInitializedAsync()
     {
-        _categoryService = new CategoryService("https://localhost:7278/api");
+        _categoryService = new CategoryService("https://localhost:7278/api", QrCodeDataService.UserId.Value);
         _categories = await _categoryService.GetAllAsyncTask();
         if (_categories.Count > 0)
         {

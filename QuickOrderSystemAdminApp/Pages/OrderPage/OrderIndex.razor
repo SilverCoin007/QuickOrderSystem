@@ -34,9 +34,9 @@
             }
         </tbody>
     </table>
-    <button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
-        Add
-    </button>
+    @* <button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
+    Add
+    </button> *@
 </table>
 
 @code {
@@ -59,7 +59,7 @@
 
         PopupService.Show(content);
     }
-    
+
     protected override async Task OnParametersSetAsync()
     {
         _userIdService = new UserIdService();

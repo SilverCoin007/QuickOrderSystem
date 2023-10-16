@@ -14,6 +14,7 @@ namespace QuickOrderSystemClassLibrary
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +44,10 @@ namespace QuickOrderSystemClassLibrary
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

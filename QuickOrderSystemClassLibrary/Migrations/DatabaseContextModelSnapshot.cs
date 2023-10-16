@@ -73,6 +73,30 @@ namespace QuickOrderSystemClassLibrary.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -181,6 +205,15 @@ namespace QuickOrderSystemClassLibrary.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.OrderItem", b =>
+                {
+                    b.HasOne("QuickOrderSystemClassLibrary.Order", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Product", b =>
                 {
                     b.HasOne("QuickOrderSystemClassLibrary.Category", null)
@@ -208,6 +241,11 @@ namespace QuickOrderSystemClassLibrary.Migrations
             modelBuilder.Entity("QuickOrderSystemClassLibrary.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("QuickOrderSystemClassLibrary.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

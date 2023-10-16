@@ -1,0 +1,13 @@
+﻿@page "/ProductIndex"
+<TopBar />
+<ProductFilter OnCategorySelected="HandleCategorySelected" />
+<ProductGallery SelectedCategoryId="@_selectedCategoryId" />
+
+@code {
+    private int _selectedCategoryId = -1;
+
+    private void HandleCategorySelected(int categoryId)
+    {
+        _selectedCategoryId = categoryId;
+    }
+}

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using ZXing;
 using ZXing.Windows.Compatibility;
 
@@ -15,14 +8,14 @@ namespace QuickOrderSystemAdminApp.Data
     public class GenerateQRCode
     {
         // Methode zur Generierung eines QR-Codes als Base64-String
-        public string GenerateQRCodeAsBase64String(string url)
+        public string GenerateQrCodeAsBase64String(string value)
         {
             System.Drawing.Color background = System.Drawing.Color.White;
             System.Drawing.Color foreground = System.Drawing.Color.Black;
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentNullException(nameof(url), "URL darf nicht leer sein.");
+                throw new ArgumentNullException(nameof(value), "URL darf nicht leer sein.");
             }
 
             var barcodeWriter = new BarcodeWriter
@@ -37,15 +30,14 @@ namespace QuickOrderSystemAdminApp.Data
                 Height = 300
             };
 
-            using (Bitmap result = barcodeWriter.Write(url))
+            using (Bitmap result = barcodeWriter.Write(value))
             using (MemoryStream ms = new MemoryStream())
             {
                 result.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 return Convert.ToBase64String(ms.ToArray());
             }
         }
-
-        // Methode zur Umwandlung eines Base64-Strings in ein Bitmap-Bild
+        
         public Bitmap Base64StringToBitmap(string base64String)
         {
             if (string.IsNullOrEmpty(base64String))

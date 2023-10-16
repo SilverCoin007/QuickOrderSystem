@@ -1,74 +1,31 @@
 ﻿@using QuickOrderSystemClassLibrary;
-@using QuickOrderSystemClassLibrary.Enum;
-@using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
 @using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopupService
 
 @page "/QR-Code"
-<table class="table">
-    <thead>
-        <tr>
-            <th>QR-Code</th>
-            <th>Table Nr.</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (_qrCode == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            foreach (var item in _qrCode)
-            {
-                <tr @onclick="(() => ShowCustomPopup(CrudTyp.Read, item))">
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.ImageData))
-                        {
-                            <img src="data:image/png;base64,@item.ImageData" width="100" height="100" />
-                        }
-                        else
-                        {
-                            <span>No image available</span>
-                        }
-                    </td>
-                    <td>@item.TableNumber</td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-<button @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-button">
-    Add
-</button>
+<div style="padding: 8px;">
+    <QrCodeCard QrCodes="@_qrCode" />
+</div>
 
 @code {
     private List<QrCode> _qrCode;
     private QrCodeService _qrCodeService;
-    private UserIdService _userIdService;
-
-    private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
+    
+    protected override async Task OnInitializedAsync()
     {
-        crudType ??= CrudTyp.Create;
-        qrCodeModel ??= new QrCode();
+        await LoadQrCodeTask();
+    }
 
-        RenderFragment content = builder =>
-        {
-            builder.OpenComponent(0, typeof(CrudQrCode));
-            builder.AddAttribute(1, "CrudType", crudType);
-            builder.AddAttribute(2, "QrCodeModel", qrCodeModel);
-            builder.CloseComponent();
-        };
-
-        PopupService.Show(content);
+    private async Task LoadQrCodeTask()
+    {
+        _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
+        _qrCode = await _qrCodeService.GetAllAsyncTask();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        _userIdService = new UserIdService();
-        _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
-        _qrCode = await _qrCodeService.GetAllAsyncTask();
+        await LoadQrCodeTask();
     }
 
     protected override void OnInitialized()
@@ -80,9 +37,7 @@
     {
         if (NavigationManager.Uri.EndsWith("/QR-Code"))
         {
-            _userIdService = new UserIdService();
-            _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
-            _qrCode = await _qrCodeService.GetAllAsyncTask();
+            await LoadQrCodeTask();
             StateHasChanged();
         }
     }
@@ -94,12 +49,3 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; }
 }
-
-<style>
-    .add-button {
-        width: 100%;
-        text-align: center;
-        border: none;
-        border-radius: 12px;
-    }
-</style>

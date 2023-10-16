@@ -1,0 +1,32 @@
+﻿@inject NavigationManager NavigationManager
+
+@page "/orderconfirmation"
+
+<h3>Order Confirmation</h3>
+
+<div class="confirmation-content">
+    <p>Thank you for your order! Your order has been received and is currently being processed.</p>
+    
+    <div class="buttons">
+        <button class="custom-button" @onclick="GoToHomePage">Back to Home</button>
+    </div>
+</div>
+
+<style>
+    .custom-button {
+        background-color: #F59D07;
+        border: none;
+        border-radius: 15px; /* runde Ecken */
+        padding: 10px 20px; /* für besseren Abstand und Aussehen */
+        color: white; /* Textfarbe */
+        cursor: pointer; /* Mauszeiger als Finger, um zu zeigen, dass es klickbar ist */
+        font-size: 1rem; /* Schriftgröße */
+    }
+</style>
+
+@code {
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

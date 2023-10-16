@@ -1,0 +1,116 @@
+﻿@using QuickOrderSystemCustomerWebApp.Data
+@using System.IO
+@using System.Net
+@using QuickOrderSystemClassLibrary
+@using System.Net.Http.Headers
+@inject HttpClient Http
+@inject DataService DataService
+
+<div class="category-filter">
+    @if (_categories == null)
+    {
+        <p><em>Loading Categories...</em></p>
+    }
+    else
+    {
+        foreach (var category in _categories)
+        {
+            <div class="category-item @((_selectedCategoryId == category.Id) ? "selected" : "")" @onclick="() => FilterByCategory(category.Id)">
+                @if (!string.IsNullOrEmpty(category.ImageData))
+                {
+                    <img src="data:image/png;base64,@category.ImageData" alt="@category.Name" class="category-icon" />
+                }
+                else
+                {
+                    <div class="no-category-image"></div>
+                }
+                <div class="category-name">@category.Name</div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<int> OnCategorySelected { get; set; }
+    private List<Category>? _categories;
+    private int _selectedCategoryId = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (DataService.Category != null) _categories = DataService.Category.ToList();
+
+        if (_categories is { Count: > 0 })
+        {
+            FilterByCategory(_categories[0].Id);
+        }
+    }
+
+    private void FilterByCategory(int categoryId)
+    {
+        _selectedCategoryId = categoryId;
+        OnCategorySelected.InvokeAsync(_selectedCategoryId);
+    }
+}
+
+<style>
+    .category-filter {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .category-item {
+        width: 80px;
+        height: 100px;
+        border-radius: 10px;
+        background-color: white;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        transition: background-color 0.3s;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        border: none !important;
+        Padding-bottom: 0px;
+    }
+
+    .category-item.selected {
+        background-color: #F59D07;
+        color: white;
+    }
+
+    .category-icon, .no-category-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        margin-bottom: auto;
+        border: none !important;
+    }
+
+    .no-category-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f4f4f4;
+    }
+
+    .category-name {
+        text-align: center;
+        font-weight: 600;
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.8rem;
+        width: 100%;
+        border: none !important;
+    }
+
+</style>

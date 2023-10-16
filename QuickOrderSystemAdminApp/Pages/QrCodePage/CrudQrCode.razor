@@ -1,51 +1,23 @@
 ﻿@using QuickOrderSystemAdminApp.Data;
 @using QuickOrderSystemClassLibrary.Enum;
 @using QuickOrderSystemClassLibrary;
-@using QuickOrderSystemClassLibrary.Services
 @using QuickOrderSystemClassLibrary.Services.Api
+@using System.Web
 @inject PopUpService PopUpService
 
+<div class="popup-close" @onclick="ClosePopup">
+    <div class="popup-close-line1"></div>
+    <div class="popup-close-line2"></div>
+</div>
 <div class="container">
     @if (CrudType != CrudTyp.Delete)
     {
-        <div class="form-group custom-input">
-            <label for="ID">ID</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="QrCodeModel.Id"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
         <div class="form-group custom-input">
             <label for="TableNumber">TableNumber</label>
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
             @bind="QrCodeModel.TableNumber"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
-        <div class="form-group custom-input">
-            <label for="Created">Created</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="QrCodeModel.Created"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
-        <div class="form-group custom-input">
-            <label for="ImageData">ImageData</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="QrCodeModel.ImageData"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
-        <div class="form-group custom-input">
-            <label for="Url">Url</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="QrCodeModel.Url"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
     }
@@ -63,7 +35,7 @@
                 break;
             case CrudTyp.Update:
                 <button class="btn btn-red" @onclick="@ClosePopup">Cancel</button>
-                <button class="btn btn-green" @onclick="@HandleSave">Edit</button>
+                <button class="btn btn-green" @onclick="@HandleSave">Save</button>
                 break;
             case CrudTyp.Delete:
                 <div class="delete-confirmation">
@@ -85,36 +57,50 @@
     [Parameter] public QrCode QrCodeModel { get; set; }
     private QrCodeService _qrCodeService;
     private readonly GenerateQRCode _qrCodeGenerator = new GenerateQRCode();
-    private UserIdService _userIdService;
+    private const string _url = "https://localhost:7185/";
 
     protected override async Task OnInitializedAsync()
     {
-        _userIdService = new UserIdService();
         _qrCodeService = new QrCodeService("https://localhost:7278/api", UserIdService.UserId.Value);
     }
 
     private async Task SwitchToEditMode()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         QrCodeModel = await _qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Update;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
     }
 
     private async Task ShowDeleteConfirmation()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         QrCodeModel = await _qrCodeService.GetByIdAsyncTask(QrCodeModel.Id);
         CrudType = CrudTyp.Delete;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
+    }
+
+    private string ModifyUrlWithParameters()
+    {
+        var baseUri = new Uri(_url);
+        
+        var queryParams = HttpUtility.ParseQueryString(baseUri.Query);
+        queryParams["tableId"] = QrCodeModel.TableNumber.ToString();
+        queryParams["userId"] = UserIdService.UserId.Value.ToString();
+        
+        var modifiedUri = new UriBuilder(baseUri)
+        {
+            Query = queryParams.ToString()
+        };
+
+        return modifiedUri.ToString();
     }
 
     private async Task HandleSave()
     {
         if (CrudType == CrudTyp.Create || CrudType == CrudTyp.Update)
         {
-            // Generiere neuen QR-Code
-            QrCodeModel.ImageData = _qrCodeGenerator.GenerateQRCodeAsBase64String(QrCodeModel.Url);
+            QrCodeModel.Url = ModifyUrlWithParameters();
+
+            QrCodeModel.ImageData = _qrCodeGenerator.GenerateQrCodeAsBase64String(QrCodeModel.Url);
 
             if (CrudType == CrudTyp.Create)
             {
@@ -150,27 +136,35 @@
 }
 
 <style>
+    .popup-close-line1 {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .popup-close-line2 {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
     .custom-input .form-control {
         border: none;
         border-bottom: 1px solid #ccc;
         border-radius: 0;
-        margin-bottom: 20px; /* Mehr Abstand zwischen den Eingabefeldern */
+        margin-bottom: 20px;
     }
 
     .button-group {
         position: sticky;
         bottom: 0;
         text-align: center;
-        margin-top: 20px; /* Abstand zu den Textfeldern */
-        margin-bottom: 20px; /* Abstand zu den Buttons hinzugefügt */
+        margin-top: 20px;
+        margin-bottom: 20px;
         display: flex;
-        justify-content: space-between; /* Buttons nebeneinander */
+        justify-content: space-between;
     }
 
     .btn {
         width: 48%;
-        height: 50px; /* Höher machen */
-        border-radius: 5px; /* Weniger abgerundet */
+        height: 50px;
+        border-radius: 5px;
     }
 
     .btn-green {
@@ -194,6 +188,6 @@
     }
 
     label {
-        font-weight: bold; /* oder einen numerischen Wert wie 600 oder 700 */
+        font-weight: bold;
     }
 </style>

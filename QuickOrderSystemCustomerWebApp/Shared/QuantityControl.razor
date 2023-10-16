@@ -1,0 +1,78 @@
+﻿@code {
+    [Parameter] public int Quantity { get; set; }
+    [Parameter] public EventCallback<int> QuantityChanged { get; set; }
+
+    private void IncreaseQuantity()
+    {
+        Quantity++;
+        QuantityChanged.InvokeAsync(Quantity);
+    }
+
+    private void DecreaseQuantity()
+    {
+        if (Quantity > 1)
+        {
+            Quantity--;
+            QuantityChanged.InvokeAsync(Quantity);
+        }
+    }
+}
+
+<div class="quantity-control">
+    <div class="operation" @onclick="IncreaseQuantity">
+        <div class="horizontal-line"></div>
+        <div class="vertical-line"></div>
+    </div>
+    <span class="quantity-number">@Quantity</span>
+    <div class="operation" @onclick="DecreaseQuantity">
+        <div class="horizontal-line"></div>
+    </div>
+</div>
+
+<style>
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        background-color: #F59D07;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        color: white;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .quantity-number {
+        font-weight: bold;
+    }
+
+    .operation {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 15px;
+        width: 15px;
+        position: relative;
+    }
+
+    .horizontal-line, .vertical-line {
+        background-color: white;
+        position: absolute;
+        border-radius: 20px;
+    }
+
+    .horizontal-line {
+        height: 3px;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .vertical-line {
+        height: 100%;
+        width: 3px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>

@@ -1,12 +1,12 @@
 ﻿<div class="navbar">
-    <button @onclick="NavigateToWebsite">
+    @* <button @onclick="NavigateToWebsite">
         <img src="Images/Icons/Website.png" class="image @GetImageClass("Website")" />
         <div class="ExpressionMark @GetExpressionMarkClass("Website")"></div>
     </button>
     <button @onclick="NavigateToDashboard">
         <img src="Images/Icons/Dashboard.png" class="image @GetImageClass("Dashboard")" />
         <div class="ExpressionMark @GetExpressionMarkClass("Dashboard")"></div>
-    </button>
+    </button> *@
     <button @onclick="NavigateToOrder">
         <img src="Images/Icons/Order.png" class="image @GetImageClass("Order")" />
         <div class="ExpressionMark @GetExpressionMarkClass("Order")"></div>
@@ -32,8 +32,8 @@
         return base.OnParametersSetAsync();
     }
 
-    private void NavigateToWebsite() => NavigateTo("Website");
-    private void NavigateToDashboard() => NavigateTo("Dashboard");
+    // private void NavigateToWebsite() => NavigateTo("Website");
+    // private void NavigateToDashboard() => NavigateTo("Dashboard");
     private void NavigateToOrder() => NavigateTo("Order");
     private void NavigateToQrCode() => NavigateTo("QR-Code");
     private void NavigateToDishes() => NavigateTo("Dishes");
@@ -63,7 +63,7 @@
         border-radius: 50000px;
         display: flex;
         justify-content: space-between;
-        padding: 10px 20px;
+        padding: 10px 60px;
         box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
     }
 

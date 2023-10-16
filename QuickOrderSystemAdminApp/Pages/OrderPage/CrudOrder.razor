@@ -5,25 +5,13 @@
 @using QuickOrderSystemAdminApp.Data
 @inject PopUpService PopUpService
 
+<div class="popup-close" @onclick="ClosePopup">
+    <div class="popup-close-line1"></div>
+    <div class="popup-close-line2"></div>
+</div>
 <div class="container">
     @if (CrudType != CrudTyp.Delete)
     {
-        <div class="form-group custom-input">
-            <label for="ID">ID</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="OrderModel.Id"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
-        <div class="form-group custom-input">
-            <label for="Created">Created</label>
-            <input type="text"
-                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
-                   id="ID"
-            @bind="OrderModel.Created"
-                   readonly="@(CrudType == CrudTyp.Read)">
-        </div>
         <div class="form-group custom-input">
             <label for="TableNumber">TableNumber</label>
             <input type="text"
@@ -37,9 +25,30 @@
             <input type="text"
                    class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
                    id="ID"
-            @bind="OrderModel.Status"
+                   @bind="OrderModel.Status"
                    readonly="@(CrudType == CrudTyp.Read)">
         </div>
+        <div class="form-group custom-input">
+            <label for="Created">Created</label>
+            <input type="text"
+                   class="form-control @(CrudType == CrudTyp.Read ? "read-only" : "")"
+                   id="ID"
+                   @bind="OrderModel.Created"
+                   readonly="@(CrudType == CrudTyp.Read)">
+        </div>
+        @if (CrudType == CrudTyp.Read)
+        {
+            <div class="order-items-section">
+                <label>Order Items</label>
+                @foreach (var item in OrderModel.OrderItems)
+                {
+                    <div class="order-item">
+                        <span>@item.Quantity</span>
+                        <span>@_productNames[item.ProductId]</span>
+                    </div>
+                }
+            </div>
+        }
     }
 
     <div class="button-group">
@@ -55,7 +64,7 @@
                 break;
             case CrudTyp.Update:
                 <button class="btn btn-red" @onclick="@ClosePopup">Cancel</button>
-                <button class="btn btn-green" @onclick="@HandleSave">Edit</button>
+                <button class="btn btn-green" @onclick="@HandleSave">Save</button>
                 break;
             case CrudTyp.Delete:
                 <div class="delete-confirmation">
@@ -76,29 +85,44 @@
     [Parameter] public CrudTyp CrudType { get; set; }
     [Parameter] public Order OrderModel { get; set; }
     private OrderService _orderService;
-    private UserIdService _userIdService;
+    private OrderItemService _orderItemService;
+    private ProductService _productService;
+    private readonly Dictionary<int, string> _productNames = new Dictionary<int, string>();
 
     protected override async Task OnInitializedAsync()
     {
+        if (UserIdService.UserId != null)
+        {
+            _orderService = new OrderService("https://localhost:7278/api", UserIdService.UserId.Value); 
+            _orderItemService = new OrderItemService("https://localhost:7278/api", UserIdService.UserId.Value);
+            _productService = new ProductService("https://localhost:7278/api", UserIdService.UserId.Value);
+            
+            if(OrderModel != null && OrderModel.Id != 0)
+            {
+                var orderItems = await _orderItemService.GetAllByOrderIdAsyncTask(OrderModel.Id);
+                OrderModel.OrderItems = orderItems.ToList();
 
-        _userIdService = new UserIdService();
-        _orderService = new OrderService("https://localhost:7278/api", UserIdService.UserId.Value);
+                foreach(var item in OrderModel.OrderItems)
+                {
+                    var product = await _productService.GetByIdAsyncTask(item.ProductId);
+                    _productNames[item.ProductId] = product.Name;
+                }
+            }
+        }
     }
 
     private async Task SwitchToEditMode()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         OrderModel = await _orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Update;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
     }
 
     private async Task ShowDeleteConfirmation()
     {
-        // Aktualisieren Sie die Daten für das aktuelle Produkt
         OrderModel = await _orderService.GetByIdAsyncTask(OrderModel.Id);
         CrudType = CrudTyp.Delete;
-        StateHasChanged(); // Aktualisieren der UI
+        StateHasChanged();
     }
 
     private async Task HandleSave()
@@ -136,27 +160,47 @@
 }
 
 <style>
+    .order-items-section {
+          margin-top: 20px;
+      }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+
+    .popup-close-line1 {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .popup-close-line2 {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
     .custom-input .form-control {
         border: none;
         border-bottom: 1px solid #ccc;
         border-radius: 0;
-        margin-bottom: 20px; /* Mehr Abstand zwischen den Eingabefeldern */
+        margin-bottom: 20px;
     }
 
     .button-group {
         position: sticky;
         bottom: 0;
         text-align: center;
-        margin-top: 20px; /* Abstand zu den Textfeldern */
-        margin-bottom: 20px; /* Abstand zu den Buttons hinzugefügt */
+        margin-top: 20px;
+        margin-bottom: 20px;
         display: flex;
-        justify-content: space-between; /* Buttons nebeneinander */
+        justify-content: space-between;
     }
 
     .btn {
         width: 48%;
-        height: 50px; /* Höher machen */
-        border-radius: 5px; /* Weniger abgerundet */
+        height: 50px;
+        border-radius: 5px;
     }
 
     .btn-green {
@@ -180,6 +224,6 @@
     }
 
     label {
-        font-weight: bold; /* oder einen numerischen Wert wie 600 oder 700 */
+        font-weight: bold;
     }
 </style>

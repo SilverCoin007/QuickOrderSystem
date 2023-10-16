@@ -1,0 +1,184 @@
+﻿@using QuickOrderSystemCustomerWebApp.Data
+@using QuickOrderSystemClassLibrary
+@using System.Net
+@inject ProductCartService CartService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="animated-div" id="shoppingCartContentDiv">
+    <div class="content-area">
+        <div class="cart-products-container">
+            @if (_cardItem == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else if (!_cardItem.Any())
+            {
+                <p>Your cart is empty.</p>
+            }
+            else
+            {
+                foreach (var item in _cardItem)
+                {
+                    <CartItemCard 
+                        CardItem ="item"
+                        OnRemove="(() => RemoveFromCart(item))"
+                        UpdateQuantity="(UpdateCartAsync)" />
+                }
+            }
+        </div>
+
+        <div class="footer-container">
+            <div class="cart-total-section">
+                <div class="total-label">Total:</div>
+                <div class="total-value">@CartTotal CHF</div>
+            </div>
+            <button @onclick="PlaceOrderAsync" class="full-width-button" disabled="@(!_cardItem?.Any() ?? true)">Order</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CardItem>? _cardItem { get; set; }
+    private decimal CartTotal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cardItem = await CartService.GetCartAsync();
+        CartTotal = _cardItem?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+
+
+    private async Task UpdateCartAsync(CardItem item)
+    {
+        await CartService.UpdateProductQuantityAsync(item.Product, item.Quantity);
+        _cardItem = await CartService.GetCartAsync();
+        CartTotal = _cardItem?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+    
+    private async Task RemoveFromCart(CardItem item)
+    {
+        await CartService.ClearProductFromCartAsync(item.Product);
+        _cardItem = await CartService.GetCartAsync();
+        CartTotal = _cardItem?.Sum(x => x.Product.Price * x.Quantity) ?? 0;
+    }
+
+    private async Task PlaceOrderAsync()
+    {
+        if (!DataService.UserId.HasValue || !DataService.TableNumber.HasValue)
+        {
+            return;
+        }
+
+        var order = new Order 
+        {
+            UserId = DataService.UserId.Value,
+            TableNumber = DataService.TableNumber.Value,
+            Created = DateTime.Now,
+            Status = "Pending"
+        };
+
+        if (_cardItem != null)
+        {
+            foreach (var item in _cardItem)
+            {
+                var orderItem = CartService.ConvertToOrderItem(item);
+                order.OrderItems.Add(orderItem);
+            }
+        }
+
+        if (!Http.DefaultRequestHeaders.Contains("UserId"))
+        {
+            Http.DefaultRequestHeaders.Add("UserId", order.UserId.ToString());
+        }
+
+        var response = await Http.PostAsJsonAsync("/api/Order", order);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await CartService.ClearCartAsync();
+            NavigationManager.NavigateTo("/orderconfirmation");
+        }
+        else
+        {
+            return;
+        }
+    }
+
+}
+
+<style>
+    .animated-div {
+        background-color: #F8F8F8;
+        flex-grow: 1;
+        overflow: hidden;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        transition: transform 0.3s;
+        transform: translateY(0);
+        width: 100vw;
+        box-sizing: border-box;
+        position: relative;
+        max-height: calc(100vh);
+        margin: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 70px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        align-content: center;
+    }
+
+    .content-area {
+        overflow: hidden; 
+        height: calc(100vh - 2rem /* top padding */ - 2rem /* bottom padding */ - 60px /* approximated footer height */ );
+        max-height: calc(100vh - 2rem /* top padding */ - 2rem /* bottom padding */ - 60px /* approximated footer height */ );
+        overflow-y: auto;
+    }
+
+    .cart-products-container {
+        display: block;
+        overflow-y: auto; 
+        max-height: calc(100vh - 2rem - 2rem - 280px);
+        padding: 2rem;
+        -ms-overflow-style: none;
+        padding-top: 30px
+    }
+
+    .cart-products-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .footer-container {
+        background-color: #F8F8F8;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 160px;
+        padding: 2rem;
+        padding-top: 1rem;
+    }
+
+    .cart-total-section {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    .full-width-button {
+        width: 100%;
+        padding: 0.5rem 0;
+        background-color: #F59D07;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .full-width-button:disabled {
+        background-color: #d0d0d0;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+

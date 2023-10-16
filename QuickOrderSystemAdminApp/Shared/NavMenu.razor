@@ -3,14 +3,14 @@
         <button @onclick="NavigateToAccount">
             <img src="Images/Icons/Account.png" />
         </button>
+@* 
+        <h2 alt="Website Icon">@currentRoute</h2> *@
 
-        <h2 alt="Website Icon">@currentRoute</h2>
-
-        <button @onclick="NavigateToSettings">
+        @* <button @onclick="NavigateToSettings">
             <img src="Images/Icons/Settings.png" />
-        </button>
+        </button> *@
     </div>
-    <Searchbar currentRoute="@currentRoute" />
+    @* <Searchbar currentRoute="@currentRoute" /> *@
     </div>
 
 @code {
@@ -70,7 +70,7 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            margin-bottom: 15px;
+            margin-bottom: 0px;
         }
 
             .TopBar img {

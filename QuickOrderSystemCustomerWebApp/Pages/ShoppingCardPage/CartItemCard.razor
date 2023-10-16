@@ -1,0 +1,94 @@
+﻿@using QuickOrderSystemCustomerWebApp.Data
+@using QuickOrderSystemClassLibrary
+
+<div class="cart-item">
+    <div class="product-image-container">
+        <img src="@($"data:image/jpeg;base64,{CardItem.Product.ImageData}")" alt="@CardItem.Product.Name" class="product-image" />
+    </div>
+    <div class="product-details">
+        <div class="product-name">@CardItem.Product.Name</div>
+        <div class="product-price">@CardItem.Product.Price CHF</div>
+        <div class="product-quantity-actions">
+            <QuantityControl Quantity="@CardItem.Quantity"
+                             QuantityChanged="HandleQuantityChange" />
+            <img src="Images/Icons/Trash.png" alt="Remove" @onclick="OnRemove" class="remove-icon" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public CardItem CardItem { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback<CardItem> UpdateQuantity { get; set; }
+
+    private void HandleQuantityChange(int newQuantity)
+    {
+        CardItem.Quantity = newQuantity;
+        UpdateQuantity.InvokeAsync(CardItem);
+    }
+}
+
+<style>
+    .cart-item {
+        display: flex;
+        background-color: white;
+        padding: 0.6rem;
+        margin-bottom: 0.8rem;
+        height: 150px;
+        border-radius: 10px;
+        box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .product-image-container {
+        flex: 0.5;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center; 
+        justify-content: center; 
+        height: 100%; 
+    }
+
+    .product-image {
+        max-width: 100%;  /* Stellt sicher, dass das Bild nicht breiter wird als der Container */
+        max-height: 100%; /* Stellt sicher, dass das Bild nicht höher wird als der Container */
+        border-radius: 8px;
+        object-fit: contain; /* Behält das ursprüngliche Seitenverhältnis des Bildes bei und stellt sicher, dass es innerhalb seiner Begrenzungen bleibt */
+        display: block;
+        margin: auto; 
+    }
+
+    .product-details {
+        flex: 0.5;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-weight: bold;
+        margin-bottom: 0rem;
+    }
+
+    .product-price {
+        margin-bottom: 1rem;
+    }
+
+    .product-quantity-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .remove-icon {
+        width: 20px;
+        height: 24px;
+        cursor: pointer;
+    }
+
+</style>

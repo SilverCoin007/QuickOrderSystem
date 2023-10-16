@@ -1,7 +1,14 @@
-﻿<div class="Searchbar" @onclick="OpenSearchbar">
+﻿@using QuickOrderSystemAdminApp.Data
+<div class="Searchbar">
     <input @bind="searchText" type="text" placeholder="@($"Search in {currentRoute}")" id="searchInput" />
     <img src="Images/Icons/Search.png" />
 </div>
+
+@code {
+    [Parameter]
+    public string currentRoute { get; set; }
+    private string searchText = "";
+}
 
 <style>
     .Searchbar {
@@ -12,35 +19,23 @@
         padding: 0px 20px;
     }
 
-        .Searchbar img {
-            width: 20px;
-            height: 20px;
-            margin: 10px 0px 4px 0px;
-        }
-
-        .Searchbar input {
-            font-size: 18px;
-            color: #444242;
-            padding: 7px 0px;
-            border: none;
-            outline: none;
-            background: none;
-            flex-grow: 1;
-        }
-
-            .Searchbar input::placeholder {
-                color: #B9B6B6;
-            }
-</style>
-
-@code {
-    [Parameter]
-    public string currentRoute { get; set; }
-
-    private string searchText = "";
-
-    private void OpenSearchbar()
-    {
-
+    .Searchbar img {
+        width: 20px;
+        height: 20px;
+        margin: 10px 0px 4px 0px;
     }
-}
+
+    .Searchbar input {
+        font-size: 18px;
+        color: #444242;
+        padding: 7px 0px;
+        border: none;
+        outline: none;
+        background: none;
+        flex-grow: 1;
+    }
+
+    .Searchbar input::placeholder {
+        color: #B9B6B6;
+    }
+</style>

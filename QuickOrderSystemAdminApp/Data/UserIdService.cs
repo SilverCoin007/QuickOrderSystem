@@ -1,4 +1,4 @@
-﻿namespace QuickOrderSystemClassLibrary.Services
+﻿namespace QuickOrderSystemAdminApp.Data
 {
     public class UserIdService
     {

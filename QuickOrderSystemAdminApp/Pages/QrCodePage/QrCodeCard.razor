@@ -1,0 +1,133 @@
+﻿@using QuickOrderSystemClassLibrary;
+@using QuickOrderSystemClassLibrary.Enum
+@using QuickOrderSystemAdminApp.Data
+@inject PopUpService PopupService
+
+
+<div class="card-container">
+    @if (QrCodes == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        foreach (var qrCode in QrCodes)
+        {
+            <div @onclick="(()=>ShowCustomPopup(CrudTyp.Read, qrCode))" class="card">
+                @if (!string.IsNullOrEmpty(qrCode.ImageData))
+                {
+                    <img src="data:image/png;base64,@qrCode.ImageData" class="qr-code" />
+                }
+                <div class="footer">Table @qrCode.TableNumber</div>
+            </div>
+        }
+        <div @onclick="(() => ShowCustomPopup(CrudTyp.Create))" class="add-card">
+            <div class="cross">
+               <div class="cross-line"></div>
+                <div class="cross-line rotate"></div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<QrCode> QrCodes { get; set; }
+
+    private void ShowCustomPopup(CrudTyp? crudType = null, QrCode qrCodeModel = null)
+    {
+        crudType ??= CrudTyp.Create;
+        qrCodeModel ??= new QrCode();
+
+        RenderFragment content = builder =>
+        {
+            builder.OpenComponent(0, typeof(CrudQrCode));
+            builder.AddAttribute(1, "CrudType", crudType);
+            builder.AddAttribute(2, "QrCodeModel", qrCodeModel);
+            builder.CloseComponent();
+        };
+
+        PopupService.Show(content);
+    }
+}
+
+<style>
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 12px;
+        margin: auto;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+        align-content: center;
+    }
+
+    .card, .add-card {
+        flex: 1;
+        min-width: 100px;
+        max-width: 100px;
+        height: 135px;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        padding: 4px;
+        margin-bottom: 10px;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .add-card {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footer {
+        background-color: #E0E0E0;
+        color: black;
+        padding: 8px 16px;
+        width: calc(100% + 8px);
+        position: absolute;
+        bottom: 0;
+        left: -4px;
+        text-align: center;
+    }
+
+    .qr-code, .cross {
+        width: 85%;
+        flex-shrink: 0;
+        margin: 4px 0;
+    }
+
+    .cross {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .cross-line {
+        background-color: black;
+        height: 5px;
+        width: 40px;
+        position: relative;
+        transform: none;
+        border-radius: 2px;
+        margin: 2px 0;
+    }
+
+    .rotate {
+        margin-top: -6px;
+        transform: rotate(90deg);
+        transform-origin: center center;
+    }
+</style>
+
